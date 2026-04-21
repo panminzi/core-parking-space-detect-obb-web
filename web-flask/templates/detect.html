@@ -1,0 +1,1346 @@
+<!-- MD5: 12d1295d2839e4f139d979332d0d22c8 -->
+<!--
+版权所有 © 2025 羊羊小栈 (GJQ)
+
+作者：羊羊小栈
+时间：2025-07-31 16:25:08
+
+本系统为原创作品，禁止二次销售！禁止将系统对应的视频、文档进行二次发布！
+违者需立即停止侵权行为，并按照【羊羊小栈系统版权声明及保护条款】中规定数额进行赔偿，并承担相应法律责任。
+-->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧交通-停车位检测系统</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/element-plus@2.4.1/dist/index.full.js"></script>
+    <script src="https://unpkg.com/@element-plus/icons-vue@2.1.0/dist/index.iife.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus@2.4.1/dist/index.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+            color: #1e293b;
+        }
+        
+        #app {
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .classify-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .classify-header {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+            flex-shrink: 0;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .header-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .header-title {
+            margin: 0;
+            color: white;
+            font-weight: 700;
+            font-size: 1.6rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .model-selector {
+            min-width: 280px;
+        }
+        
+        .model-selector .el-input__wrapper {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .model-selector .el-input__inner {
+            color: white;
+        }
+        
+        .model-selector .el-input__inner::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: white;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .classify-main {
+            flex: 1;
+            display: flex;
+            background: rgba(248, 250, 252, 0.8);
+            position: relative;
+            overflow: hidden;
+            min-height: 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .left-panel {
+            width: 50%;
+            padding: 32px;
+            overflow-y: auto;
+        }
+        
+        .right-panel {
+            width: 50%;
+            padding: 32px;
+            border-left: 1px solid #e4e7ed;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+        
+        .upload-area {
+            border: 2px dashed #c0c4cc;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #ffffff;
+            margin-bottom: 24px;
+        }
+        
+        .upload-area:hover {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #c0c4cc;
+            margin-bottom: 16px;
+        }
+        
+        .upload-text {
+            color: #606266;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .upload-hint {
+            color: #909399;
+            font-size: 14px;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .image-preview:hover {
+            transform: scale(1.02);
+        }
+        
+        .image-preview-dialog .el-dialog__body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: auto;
+            max-height: 80vh;
+        }
+        
+        .image-preview-container {
+            position: relative;
+            overflow: auto;
+            max-width: 100%;
+            max-height: 100%;
+            cursor: grab;
+        }
+        
+        .image-preview-container:active {
+            cursor: grabbing;
+        }
+        
+        .image-preview-dialog img {
+            display: block;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            min-width: 300px;
+            min-height: 200px;
+        }
+        
+        .image-zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .zoom-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        
+        .zoom-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .zoom-text {
+            color: white;
+            font-size: 14px;
+            min-width: 50px;
+            text-align: center;
+        }
+        
+        .supported-classes-container {
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+        
+        .supported-classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 4px;
+        }
+        
+        .class-tag {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            color: #3b82f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+        
+        .classify-button {
+            width: 100%;
+            height: 50px;
+            font-size: 16px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            border: none;
+            margin-bottom: 16px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .classify-button:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+        }
+        
+        .result-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .result-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #303133;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #606266;
+            font-size: 14px;
+        }
+        
+        .result-rank.rank-1 {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+        }
+        
+        .result-rank.rank-2 {
+            background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+            color: white;
+        }
+        
+        .result-rank.rank-3 {
+            background: linear-gradient(135deg, #CD7F32, #B8860B);
+            color: white;
+        }
+        
+        .result-info {
+            flex: 1;
+            margin-left: 16px;
+        }
+        
+        .result-class {
+            font-size: 16px;
+            font-weight: 600;
+            color: #303133;
+            margin-bottom: 4px;
+        }
+        
+        .result-class-en {
+            font-size: 12px;
+            color: #909399;
+        }
+        
+        .result-confidence {
+            font-size: 18px;
+            font-weight: 600;
+            color: #60a5fa;
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 6px;
+            background: #f0f2f5;
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #34d399, #10b981);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .loading-spinner {
+            color: #60a5fa;
+            animation: spin 2s linear infinite;
+        }
+        
+        .loading-text {
+            color: #606266;
+            font-size: 16px;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-result {
+            text-align: center;
+            color: #909399;
+            padding: 40px 0;
+        }
+        
+        .empty-result .icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-item {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .parking-stats {
+            display: flex;
+            gap: 16px;
+            margin: 16px 0 24px 0;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e4e7ed;
+        }
+        
+        .stats-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .stats-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stats-item.vacant {
+            border-left: 4px solid #34d399;
+        }
+        
+        .stats-item.occupied {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .stats-item.total {
+            border-left: 4px solid #60a5fa;
+        }
+        
+        .stats-item.total.low-usage {
+            border-left: 4px solid #34d399;
+        }
+        
+        .stats-item.total.medium-usage {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .stats-item.total.high-usage {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .stats-icon {
+            font-size: 20px;
+        }
+        
+        .stats-info {
+            flex: 1;
+        }
+        
+        .stats-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .stats-count {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .vacant-locations {
+            margin-top: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            text-align: left;
+        }
+        
+        .location-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 10px;
+        }
+        
+        .location-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #60a5fa;
+            box-shadow: 0 2px 6px rgba(96, 165, 250, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .location-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.15);
+        }
+        
+        .location-icon {
+            font-size: 16px;
+            color: #60a5fa;
+            margin-top: 2px;
+        }
+        
+        .location-info {
+            flex: 1;
+            font-size: 13px;
+        }
+        
+        .location-desc {
+            color: #1f2937;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+        
+        .location-coordinates {
+            color: #4b5563;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            margin: 2px 0;
+        }
+        
+        .location-confidence {
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 400;
+        }
+        
+        @media (max-width: 1024px) {
+            .classify-main {
+                flex-direction: column;
+            }
+            
+            .location-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .left-panel, .right-panel {
+                width: 100%;
+            }
+            
+            .right-panel {
+                border-left: none;
+                border-top: 1px solid #e4e7ed;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="classify-container">
+            <!-- 头部 -->
+            <div class="classify-header">
+                <div class="header-left">
+                    <div class="header-logo">
+                        <img src="./images/logo.png" alt="Logo" />
+                        <h2 class="header-title">智慧交通-停车位检测系统</h2>
+                    </div>
+                    <el-select
+                        v-model="selectedModel"
+                        placeholder="选择模型"
+                        @change="handleModelChange"
+                        class="model-selector"
+                        :loading="modelsLoading"
+                    >
+                        <el-option
+                            v-for="model in models"
+                            :key="model.key"
+                            :label="model.name"
+                            :value="model.key"
+                        >
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>{{ model.name }}</span>
+                                <el-tag size="small" type="info">{{ model.num_classes }}类</el-tag>
+                            </div>
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="header-right">
+                    <div class="nav-buttons" style="display: flex; gap: 12px; margin-right: 16px;">
+                        <el-button class="nav-btn" @click="goToVideoDetect">
+                            🎬 视频检测
+                        </el-button>
+                        <el-button class="nav-btn" @click="goToRealtimeDetect">
+                            📹 实时检测
+                        </el-button>
+                    </div>
+                    <div class="user-info">
+                        <span>{{ currentUser.realName || '用户' }}</span>
+                        <el-button
+                            type="danger"
+                            size="small"
+                            plain
+                            @click="handleLogout"
+                        >
+                            退出
+                        </el-button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 主要内容区域 -->
+            <div class="classify-main">
+                <!-- 左侧面板 - 图像上传和预览 -->
+                <div class="left-panel">
+                    <!-- 图像上传区域 -->
+                    <div
+                        class="upload-area"
+                        :class="{ dragover: isDragOver }"
+                        @click="$refs.fileInput.click()"
+                        @drop="handleDrop"
+                        @dragover.prevent="isDragOver = true"
+                        @dragleave="isDragOver = false"
+                        @dragend="isDragOver = false"
+                        v-if="!selectedImage"
+                    >
+                        <div class="upload-icon">📸</div>
+                        <div class="upload-text">点击上传停车场图像</div>
+                        <div class="upload-hint">支持 JPG、PNG 格式，或拖拽图片到此区域进行停车位检测</div>
+                    </div>
+                    
+                    <!-- 图像预览 -->
+                    <div v-if="selectedImage" style="text-align: center;">
+                        <img :src="selectedImage" alt="预览图片" class="image-preview" @click="showImagePreview = true" />
+                        <div style="display: flex; gap: 12px; justify-content: center; margin: 0 0 20px 0;">
+                            <el-button
+                                type="danger"
+                                size="small"
+                                @click="clearImage"
+                            >
+                                清除图片
+                            </el-button>
+                            <el-button
+                                type="primary"
+                                size="small"
+                                @click="$refs.fileInput.click()"
+                            >
+                                重新选择
+                            </el-button>
+                        </div>
+                    </div>
+                    
+                    <!-- 停车位检测按钮 -->
+                    <el-button
+                        type="primary"
+                        :loading="detecting"
+                        @click="detectObjects"
+                        :disabled="!selectedImage || detecting"
+                        class="classify-button"
+                        v-if="selectedImage"
+                    >
+                        {{ detecting ? '停车位检测中...' : '开始停车位检测' }}
+                    </el-button>
+                    
+                    <!-- 模型信息 -->
+                    <div v-if="currentModel" class="result-container" style="margin-top: 16px;">
+                        <div class="result-title">
+                            ℹ️ 模型信息
+                        </div>
+                        <div style="color: #606266; line-height: 1.6;">
+                            <p><strong>模型名称：</strong>{{ currentModel.name }}</p>
+                            <p><strong>模型路径：</strong><span style="font-size: 12px; color: #909399;">{{ currentModel.model_path }}</span></p>
+                            <p><strong>检测类别数量：</strong>{{ getSupportedClassesCount() }} 类</p>
+                            <div><strong>支持类别：</strong></div>
+                            <div class="supported-classes-container">
+                                <div class="supported-classes-grid">
+                                    <div v-for="className in getSupportedClassesList()" :key="className" class="class-tag">
+                                        {{ className }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 模型数据查看按钮 -->
+                            <div style="margin-top: 16px; display: flex; gap: 8px;">
+                                <el-button
+                                    size="small" 
+                                    type="info"
+                                    @click="viewTrainingData"
+                                    v-if="currentModel.train_results_path"
+                                >
+                                    📊 查看训练数据
+                                </el-button>
+                                <el-button
+                                    size="small"
+                                    type="primary" 
+                                    @click="viewValidationData"
+                                    v-if="currentModel.val_data_path"
+                                >
+                                    🖼️ 查看测试数据
+                                </el-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧面板 - 停车位检测结果 -->
+                <div class="right-panel">
+                    <!-- 加载状态 -->
+                    <div v-if="detecting" class="loading-overlay">
+                        <div class="loading-content">
+                            <div class="loading-spinner">
+                                <el-icon :size="48"><Loading /></el-icon>
+                            </div>
+                            <div class="loading-text">正在检测停车位...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 停车位检测结果 -->
+                    <div v-if="detectionResult && !detecting">
+                        <div class="result-container">
+                            <div class="result-title">
+                                🔬 停车位检测结果 ({{ detectionResult.total_detections || 0 }} 个停车位)
+                            </div>
+                            
+                            <!-- 车位状态统计 -->
+                            <div class="parking-stats" v-if="detectionResult.detections && detectionResult.detections.length > 0">
+                                <div class="stats-item vacant">
+                                    <div class="stats-icon">🟢</div>
+                                    <div class="stats-info">
+                                        <div class="stats-label">空闲车位</div>
+                                        <div class="stats-count">{{ getVacantCount() }}</div>
+                                    </div>
+                                </div>
+                                <div class="stats-item occupied">
+                                    <div class="stats-icon">🔴</div>
+                                    <div class="stats-info">
+                                        <div class="stats-label">占用车位</div>
+                                        <div class="stats-count">{{ getOccupiedCount() }}</div>
+                                    </div>
+                                </div>
+                                <div class="stats-item total" :class="getOccupancyRateClass()">
+                                    <div class="stats-icon">{{ getOccupancyRateIcon() }}</div>
+                                    <div class="stats-info">
+                                        <div class="stats-label">使用率</div>
+                                        <div class="stats-count" :style="{ color: getOccupancyRateColor() }">{{ getOccupancyRate() }}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 检测结果图片 -->
+                            <div v-if="detectionResult.detection_image" style="text-align: center; margin-bottom: 20px;">
+                                <div style="margin-bottom: 10px; font-weight: 600; color: #303133;">📸 检测结果图像</div>
+                                <img 
+                                    :src="detectionResult.detection_image" 
+                                    alt="检测结果" 
+                                    style="max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); cursor: pointer;"
+                                    @click="previewDetectionImage"
+                                />
+                                
+                                <!-- 空闲车位位置信息 - 放在图片下方 -->
+                                <div class="vacant-locations" v-if="getVacantCount() > 0">
+                                    <div class="location-title">
+                                        🗺️ 空闲车位位置分布
+                                    </div>
+                                    <div class="location-grid">
+                                        <div 
+                                            v-for="(location, index) in getVacantLocations()" 
+                                            :key="index"
+                                            class="location-item"
+                                        >
+                                            <div class="location-icon">📍</div>
+                                            <div class="location-info">
+                                                <div class="location-desc">{{ location.description }}</div>
+                                                <div class="location-coordinates">坐标: {{ location.coordinates }}</div>
+                                                <div class="location-confidence">置信度: {{ (location.confidence * 100).toFixed(1) }}%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                            <!-- 无检测结果时显示 -->
+                            <div v-else style="text-align: center; padding: 20px; color: #909399;">
+                                <div style="font-size: 48px; margin-bottom: 16px;">🔍</div>
+                                <p>{{ detectionResult.message || '未检测到任何停车位' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 空状态 -->
+                    <div v-if="!detectionResult && !detecting" class="empty-result">
+                        <div class="icon">🔍</div>
+                        <p>上传图片并点击检测按钮查看结果</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 隐藏的文件输入 -->
+        <input
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            style="display: none"
+            @change="handleImageUpload"
+        />
+        
+        <!-- 图片预览对话框 -->
+        <el-dialog
+            v-model="showImagePreview"
+            title="图片预览"
+            width="40%"
+            class="image-preview-dialog"
+            :show-close="true"
+            center
+        >
+            <div class="image-preview-container" 
+                 @wheel="handleImageZoom" 
+                 @mousedown="startDrag" 
+                 @mousemove="onDrag" 
+                 @mouseup="endDrag" 
+                 @mouseleave="endDrag"
+                 ref="imageContainer">
+                <img :src="previewImageForDetection || selectedImage" 
+                     :alt="previewImageForDetection ? '检测结果预览' : '原图预览'" 
+                     :style="{ transform: `scale(${imageScale}) translate(${imageTranslateX}px, ${imageTranslateY}px)` }"
+                     @dragstart.prevent />
+            </div>
+            
+            <div class="image-zoom-controls">
+                <button class="zoom-btn" @click="zoomOut">−</button>
+                <span class="zoom-text">{{ Math.round(imageScale * 100) }}%</span>
+                <button class="zoom-btn" @click="zoomIn">+</button>
+                <button class="zoom-btn" @click="resetZoom" title="重置">⌂</button>
+            </div>
+        </el-dialog>
+    </div>
+
+    <script>
+        // API配置
+        const API_CONFIG = {
+            baseURL: 'http://localhost:5011',
+            endpoints: {
+                models: '/api/models',
+                detect: '/api/detect'
+            }
+        };
+
+        // 用户缓存管理
+        const UserCache = {
+            USER_KEY: 'yyxz_core_user_info',
+            
+            saveUser(userInfo) {
+                localStorage.setItem(this.USER_KEY, JSON.stringify(userInfo));
+            },
+            
+            getUser() {
+                const userStr = localStorage.getItem(this.USER_KEY);
+                return userStr ? JSON.parse(userStr) : null;
+            },
+            
+            clearUser() {
+                localStorage.removeItem(this.USER_KEY);
+            },
+            
+            isLoggedIn() {
+                return !!this.getUser();
+            }
+        };
+
+        const { createApp } = Vue;
+        const { ElMessage } = ElementPlus;
+
+        const app = createApp({
+            data() {
+                return {
+                    currentUser: {},
+                    models: [],
+                    modelsLoading: false,
+                    selectedModel: '',
+                    selectedImage: null,
+                    detecting: false,
+                    detectionResult: null,
+                    isDragOver: false,
+                    showImagePreview: false,
+                    imageScale: 1,
+                    imageTranslateX: 0,
+                    imageTranslateY: 0,
+                    isDragging: false,
+                    dragStartX: 0,
+                    dragStartY: 0,
+                    dragStartTranslateX: 0,
+                    dragStartTranslateY: 0,
+                    previewImageForDetection: null
+                };
+            },
+            computed: {
+                currentModel() {
+                    return this.models.find(m => m.key === this.selectedModel) || {};
+                }
+            },
+            async mounted() {
+                this.checkLoginStatus();
+                await this.loadModels();
+            },
+            methods: {
+                checkLoginStatus() {
+                    if (!UserCache.isLoggedIn()) {
+                        window.location.href = './login.html';
+                        return;
+                    }
+                    this.currentUser = UserCache.getUser();
+                },
+                
+                async loadModels() {
+                    this.modelsLoading = true;
+                    try {
+                        const response = await fetch(API_CONFIG.baseURL + API_CONFIG.endpoints.models);
+                        const result = await response.json();
+                        if (result.code === 200) {
+                            this.models = result.data;
+                            if (this.models.length > 0) {
+                                this.selectedModel = this.models[0].key;
+                            }
+                        } else {
+                            ElMessage.error(result.message);
+                        }
+                    } catch (error) {
+                        ElMessage.error('加载模型失败：' + error.message);
+                    } finally {
+                        this.modelsLoading = false;
+                    }
+                },
+                
+                handleModelChange() {
+                    this.detectionResult = null;
+                },
+                
+                async handleLogout() {
+                    UserCache.clearUser();
+                    ElMessage.success('退出成功');
+                    window.location.href = './login.html';
+                },
+                
+                goToVideoDetect() {
+                    window.location.href = './video-detect.html';
+                },
+                
+                goToRealtimeDetect() {
+                    window.location.href = './realtime-detect.html';
+                },
+                
+                handleImageUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    
+                    this.processImageFile(file);
+                    event.target.value = '';
+                },
+                
+                handleDrop(event) {
+                    event.preventDefault();
+                    this.isDragOver = false;
+                    
+                    const files = event.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.processImageFile(files[0]);
+                    }
+                },
+                
+                processImageFile(file) {
+                    if (!file.type.startsWith('image/')) {
+                        ElMessage.error('请选择图片文件');
+                        return;
+                    }
+                    
+                    if (file.size > 30 * 1024 * 1024) {
+                        ElMessage.error('图片大小不能超过30MB');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.selectedImage = e.target.result;
+                        this.detectionResult = null;
+                        ElMessage.success('图片上传成功');
+                    };
+                    reader.readAsDataURL(file);
+                },
+                
+                clearImage() {
+                    this.selectedImage = null;
+                    this.detectionResult = null;
+                },
+                
+                getSupportedClassesList() {
+                    if (!this.currentModel || !this.currentModel.supported_classes) {
+                        return [];
+                    }
+                    return this.currentModel.supported_classes;
+                },
+                
+                getSupportedClassesCount() {
+                    if (!this.currentModel || !this.currentModel.num_classes) {
+                        return 0;
+                    }
+                    return this.currentModel.num_classes;
+                },
+                
+                async detectObjects() {
+                    if (!this.selectedImage || this.detecting) return;
+                    
+                    this.detecting = true;
+                    
+                    try {
+                        const response = await fetch(API_CONFIG.baseURL + API_CONFIG.endpoints.detect, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                model: this.selectedModel,
+                                image: this.selectedImage
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        if (result.code === 200) {
+                            this.detectionResult = result.data;
+                            if (result.data.detections && result.data.detections.length > 0) {
+                                ElMessage.success(`检测完成，发现 ${result.data.total_detections} 个停车位`);
+                            } else {
+                                ElMessage.info('检测完成，未发现任何停车位');
+                            }
+                        } else if (result.code === 401) {
+                            UserCache.clearUser();
+                            window.location.href = './login.html';
+                        } else {
+                            ElMessage.error(result.message);
+                        }
+                    } catch (error) {
+                        ElMessage.error('停车位检测失败：' + error.message);
+                    } finally {
+                        this.detecting = false;
+                    }
+                },
+                
+                // 图片预览缩放功能
+                handleImageZoom(event) {
+                    event.preventDefault();
+                    const delta = event.deltaY > 0 ? -0.1 : 0.1;
+                    this.imageScale = Math.max(0.1, Math.min(5, this.imageScale + delta));
+                },
+                
+                zoomIn() {
+                    this.imageScale = Math.min(5, this.imageScale + 0.2);
+                },
+                
+                zoomOut() {
+                    this.imageScale = Math.max(0.1, this.imageScale - 0.2);
+                },
+                
+                resetZoom() {
+                    this.imageScale = 1;
+                    this.imageTranslateX = 0;
+                    this.imageTranslateY = 0;
+                },
+                
+                // 图片拖拽功能
+                startDrag(event) {
+                    if (this.imageScale <= 1) return;
+                    this.isDragging = true;
+                    this.dragStartX = event.clientX;
+                    this.dragStartY = event.clientY;
+                    this.dragStartTranslateX = this.imageTranslateX;
+                    this.dragStartTranslateY = this.imageTranslateY;
+                },
+                
+                onDrag(event) {
+                    if (!this.isDragging || this.imageScale <= 1) return;
+                    const deltaX = event.clientX - this.dragStartX;
+                    const deltaY = event.clientY - this.dragStartY;
+                    this.imageTranslateX = this.dragStartTranslateX + deltaX / this.imageScale;
+                    this.imageTranslateY = this.dragStartTranslateY + deltaY / this.imageScale;
+                },
+                
+                endDrag() {
+                    this.isDragging = false;
+                },
+                
+                // 查看训练数据
+                viewTrainingData() {
+                    if (!this.currentModel || !this.currentModel.train_results_path) {
+                        ElMessage.warning('当前模型没有配置训练数据路径');
+                        return;
+                    }
+                    
+                    // 打开新窗口显示训练数据图表
+                    const url = `./model-data.html?type=training&model=${this.selectedModel}`;
+                    window.open(url, '_blank', 'width=1200,height=800');
+                },
+                
+                // 查看验证数据
+                viewValidationData() {
+                    if (!this.currentModel || !this.currentModel.val_data_path) {
+                        ElMessage.warning('当前模型没有配置验证数据路径');
+                        return;
+                    }
+                    
+                    // 打开新窗口显示验证数据
+                    const url = `./model-data.html?type=validation&model=${this.selectedModel}`;
+                    window.open(url, '_blank', 'width=1200,height=800');
+                },
+                
+                // 预览检测结果图片
+                previewDetectionImage() {
+                    if (this.detectionResult && this.detectionResult.detection_image) {
+                        this.showImagePreview = true;
+                        // 临时设置预览图片为检测结果图片
+                        this.previewImageForDetection = this.detectionResult.detection_image;
+                    }
+                },
+                
+                // 计算空闲车位数量
+                getVacantCount() {
+                    if (!this.detectionResult || !this.detectionResult.detections) {
+                        return 0;
+                    }
+                    return this.detectionResult.detections.filter(detection => 
+                        detection.class_name === 'vacant'
+                    ).length;
+                },
+                
+                // 计算占用车位数量
+                getOccupiedCount() {
+                    if (!this.detectionResult || !this.detectionResult.detections) {
+                        return 0;
+                    }
+                    return this.detectionResult.detections.filter(detection => 
+                        detection.class_name === 'occupied'
+                    ).length;
+                },
+                
+                // 计算使用率
+                getOccupancyRate() {
+                    const total = this.getVacantCount() + this.getOccupiedCount();
+                    if (total === 0) return 0;
+                    const occupied = this.getOccupiedCount();
+                    return Math.round((occupied / total) * 100);
+                },
+                
+                // 根据使用率获取图标
+                getOccupancyRateIcon() {
+                    const rate = this.getOccupancyRate();
+                    if (rate <= 30) return '😊';      // 低使用率 - 笑脸
+                    if (rate <= 60) return '😐';      // 中等使用率 - 平脸
+                    if (rate <= 80) return '😟';      // 较高使用率 - 担忧
+                    return '😰';                       // 高使用率 - 紧张
+                },
+                
+                // 根据使用率获取颜色
+                getOccupancyRateColor() {
+                    const rate = this.getOccupancyRate();
+                    if (rate <= 30) return '#34d399';  // 绿色
+                    if (rate <= 60) return '#f59e0b';  // 橙色
+                    if (rate <= 80) return '#f97316';  // 深橙色
+                    return '#ef4444';                   // 红色
+                },
+                
+                // 根据使用率获取样式类
+                getOccupancyRateClass() {
+                    const rate = this.getOccupancyRate();
+                    if (rate <= 30) return 'low-usage';
+                    if (rate <= 60) return 'medium-usage';
+                    return 'high-usage';
+                },
+                
+                // 获取空闲车位位置信息
+                getVacantLocations() {
+                    if (!this.detectionResult || !this.detectionResult.detections) {
+                        return [];
+                    }
+                    
+                    const vacantSpots = this.detectionResult.detections.filter(detection => 
+                        detection.class_name === 'vacant'
+                    );
+                    
+                    return vacantSpots.map((detection, index) => {
+                        const obb = detection.obb;
+                        
+                        // 使用OBB格式数据
+                        const centerX = obb.center_x;
+                        const centerY = obb.center_y;
+                        const width = Math.round(obb.width);
+                        const height = Math.round(obb.height);
+                        const rotation = (obb.rotation * 180 / Math.PI).toFixed(1);
+                        
+                        // 格式化四个顶点坐标
+                        const polygon = obb.polygon;
+                        const p1 = `(${Math.round(polygon[0])}, ${Math.round(polygon[1])})`;
+                        const p2 = `(${Math.round(polygon[2])}, ${Math.round(polygon[3])})`;
+                        const p3 = `(${Math.round(polygon[4])}, ${Math.round(polygon[5])})`;
+                        const p4 = `(${Math.round(polygon[6])}, ${Math.round(polygon[7])})`;
+                        
+                        const coordinates = `中心: (${Math.round(centerX)}, ${Math.round(centerY)}), 尺寸: ${width}×${height}, 旋转: ${rotation}°`;
+                        
+                        return {
+                            description: this.getLocationDescription(centerX, centerY, index + 1),
+                            coordinates: coordinates,
+                            confidence: detection.confidence
+                        };
+                    });
+                },
+                
+                // 根据坐标生成位置描述
+                getLocationDescription(x, y, index) {
+                    // 假设图片尺寸，实际应该从检测结果获取
+                    const imageWidth = 640;  // 默认图片宽度
+                    const imageHeight = 480; // 默认图片高度
+                    
+                    // 将图片分为3x3网格来描述位置
+                    const gridX = Math.floor((x / imageWidth) * 3);
+                    const gridY = Math.floor((y / imageHeight) * 3);
+                    
+                    const verticalPos = gridY === 0 ? '上方' : gridY === 1 ? '中间' : '下方';
+                    const horizontalPos = gridX === 0 ? '左侧' : gridX === 1 ? '中央' : '右侧';
+                    
+                    // 添加更具体的描述
+                    let description = `${verticalPos}${horizontalPos}区域`;
+                    
+                    // 如果是边缘位置，添加更详细描述
+                    if (gridX === 0 && gridY === 0) description = '左上角区域';
+                    else if (gridX === 2 && gridY === 0) description = '右上角区域';
+                    else if (gridX === 0 && gridY === 2) description = '左下角区域';
+                    else if (gridX === 2 && gridY === 2) description = '右下角区域';
+                    else if (gridX === 1 && gridY === 0) description = '顶部中央区域';
+                    else if (gridX === 1 && gridY === 2) description = '底部中央区域';
+                    else if (gridX === 0 && gridY === 1) description = '左侧中间区域';
+                    else if (gridX === 2 && gridY === 1) description = '右侧中间区域';
+                    else if (gridX === 1 && gridY === 1) description = '中心区域';
+                    
+                    return `第${index}个空闲车位 - ${description}`;
+                }
+            },
+            
+            watch: {
+                showImagePreview(newVal) {
+                    if (newVal) {
+                        this.resetZoom();
+                    } else {
+                        // 关闭预览时清理检测结果图片
+                        this.previewImageForDetection = null;
+                    }
+                }
+            }
+        });
+        
+        // 注册图标组件
+        for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+            app.component(key, component);
+        }
+        
+        app.use(ElementPlus).mount('#app');
+    </script>
+</body>
+</html>

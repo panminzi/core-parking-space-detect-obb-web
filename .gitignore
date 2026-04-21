@@ -1,0 +1,55 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments and local Python tooling
+.venv/
+venv/
+env/
+ENV/
+pip-wheel-metadata/
+
+# Flask/local runtime files
+.env
+.env.*
+!.env.example
+instance/
+*.log
+web-flask/users.json
+web-flask/config.local.py
+web-flask/templates/config/
+
+# IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Model training datasets, generated runs, and model weights
+other/model_train/**/dataset/
+other/model_train/**/datasets/
+other/model_train/**/output/
+other/model_train/**/runs/
+other/model_train/**/weights/
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# Uploaded/generated media and temporary files
+uploads/
+temp/
+tmp/
+*.mp4
+*.avi
+*.mov
+*.mkv
