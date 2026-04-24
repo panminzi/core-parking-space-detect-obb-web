@@ -1,0 +1,6 @@
+数据集来源：https://universe.roboflow.com/parkinglotdetectionteamcentaurus/parking-space-3-rwpgl
+
+完整数据集：
+训练集：1179个样例
+验证集：112个样例
+测试集：56个样例

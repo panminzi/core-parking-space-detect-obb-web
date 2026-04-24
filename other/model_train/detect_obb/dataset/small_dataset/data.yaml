@@ -1,0 +1,17 @@
+train: ../train/images
+val: ../val/images
+test: ../test/images
+
+# 类别数量
+nc: 2
+
+names: 
+  0: occupied
+  1: vacant
+
+# ====================
+# 中文类别名称映射
+# ====================
+# occupied : 占用
+# vacant : 空闲
+# ====================

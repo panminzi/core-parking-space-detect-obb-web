@@ -1,4 +1,8 @@
-# Python bytecode and caches
+# Keep this file conservative: only ignore machine-local junk.
+# Files required for the project to run on another device should stay trackable,
+# except large generated training output that should not be versioned.
+
+# Python caches
 __pycache__/
 *.py[cod]
 *$py.class
@@ -6,24 +10,27 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# Virtual environments and local Python tooling
+# Virtual environments and packaging leftovers
 .venv/
 venv/
 env/
 ENV/
 pip-wheel-metadata/
+*.egg-info/
+build/
+dist/
 
-# Flask/local runtime files
+# Local environment files
 .env
-.env.*
-!.env.example
-instance/
-*.log
-web-flask/users.json
-web-flask/config.local.py
-web-flask/templates/config/
+.env.local
+.env.*.local
 
-# IDE/editor files
+# Runtime logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# IDE / editor
 .idea/
 .vscode/
 *.swp
@@ -34,22 +41,5 @@ web-flask/templates/config/
 Thumbs.db
 desktop.ini
 
-# Model training datasets, generated runs, and model weights
-other/model_train/**/dataset/
-other/model_train/**/datasets/
-other/model_train/**/output/
-other/model_train/**/runs/
-other/model_train/**/weights/
-*.pt
-*.pth
-*.onnx
-*.engine
-
-# Uploaded/generated media and temporary files
-uploads/
-temp/
-tmp/
-*.mp4
-*.avi
-*.mov
-*.mkv
+# Large generated model output
+other/model_train/detect_obb/output/
