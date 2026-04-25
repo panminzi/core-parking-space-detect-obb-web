@@ -1,14 +1,3 @@
-<!-- MD5: a13558cf083692aa62cd1bc69b7e446c -->
-<!--
-版权所有 © 2025 羊羊小栈 (GJQ)
-
-作者：羊羊小栈
-时间：2025-07-31 16:25:08
-
-本系统为原创作品，禁止二次销售！禁止将系统对应的视频、文档进行二次发布！
-违者需立即停止侵权行为，并按照【羊羊小栈系统版权声明及保护条款】中规定数额进行赔偿，并承担相应法律责任。
--->
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -17,461 +6,607 @@
     <title>登录 - 智慧交通停车位检测系统</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/element-plus@2.4.1/dist/index.full.js"></script>
-    <script src="https://unpkg.com/@element-plus/icons-vue@2.1.0/dist/index.iife.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/element-plus@2.4.1/dist/index.css">
     <style>
+        :root {
+            --paper: rgba(255, 250, 243, 0.9);
+            --line: rgba(117, 87, 49, 0.16);
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #c66a2b;
+            --accent-strong: #9f4f18;
+            --mint: #1f7a6d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
             min-height: 100vh;
+            font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 0% 0%, rgba(198, 106, 43, 0.28), transparent 28%),
+                radial-gradient(circle at 100% 0%, rgba(31, 122, 109, 0.22), transparent 26%),
+                linear-gradient(160deg, #f8f2e7 0%, #efe7d9 52%, #e8dfcf 100%);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(rgba(255,255,255,0.16) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.16) 1px, transparent 1px);
+            background-size: 30px 30px;
+            mask-image: linear-gradient(180deg, rgba(0,0,0,0.8), transparent);
+        }
+
+        #app {
+            min-height: 100vh;
+        }
+
+        .login-shell {
+            width: min(1320px, calc(100vw - 32px));
+            min-height: calc(100vh - 32px);
+            margin: 16px auto;
+            padding: 18px;
+            border-radius: 28px;
+            border: 1px solid var(--line);
+            background: rgba(255, 247, 236, 0.7);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 28px 70px rgba(94, 69, 33, 0.14);
+        }
+
+        .login-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(360px, 430px);
+            gap: 18px;
+            min-height: calc(100vh - 68px);
+        }
+
+        .story-panel,
+        .form-panel {
+            border-radius: 24px;
+            border: 1px solid var(--line);
             overflow: hidden;
         }
-        
-        .login-container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-        }
-        
-        .left-section {
-            flex: 1;
-            background: url('./images/login-bg.jpg') center center no-repeat;
-            background-size: cover;
+
+        .story-panel {
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .left-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(96, 165, 250, 0.15) 0%, rgba(59, 130, 246, 0.12) 50%, rgba(37, 99, 235, 0.08) 100%);
-        }
-        
-        .left-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: white;
-            max-width: 500px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.18);
-            border-radius: 16px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-        }
-        
-        .left-title {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.6);
-            color: white;
-        }
-        
-        .left-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.7), 0 0 15px rgba(0, 0, 0, 0.5);
-        }
-        
-        .left-features {
+            background:
+                linear-gradient(135deg, rgba(23, 34, 27, 0.56), rgba(70, 38, 16, 0.55)),
+                url('./images/login-bg.jpg') center center / cover no-repeat;
+            padding: 30px;
+            color: #fffdf8;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            text-align: left;
+            justify-content: space-between;
+            min-height: 100%;
         }
-        
-        .feature-item {
-            display: flex;
+
+        .story-panel::after {
+            content: "";
+            position: absolute;
+            inset: auto -60px -80px auto;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 65%);
+        }
+
+        .story-top {
+            position: relative;
+            z-index: 1;
+        }
+
+        .story-badge {
+            display: inline-flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1rem;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+            gap: 8px;
             padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .feature-item:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-        }
-        
-        .feature-icon {
-            width: 24px;
-            height: 24px;
-            background: rgba(96, 165, 250, 0.6);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.24);
             font-size: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
-        
-        .right-section {
-            width: 420px;
-            background: white;
+
+        .story-title {
+            margin: 18px 0 14px;
+            font-size: clamp(34px, 4vw, 56px);
+            line-height: 0.98;
+            max-width: 9ch;
+        }
+
+        .story-copy {
+            max-width: 580px;
+            color: rgba(255,255,255,0.88);
+            line-height: 1.85;
+            font-size: 15px;
+        }
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 28px;
+        }
+
+        .story-card {
+            padding: 18px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        .story-card strong {
+            display: block;
+            margin: 12px 0 8px;
+            font-size: 18px;
+        }
+
+        .story-card span {
+            color: rgba(255,255,255,0.82);
+            line-height: 1.7;
+            font-size: 13px;
+        }
+
+        .story-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: rgba(255,255,255,0.16);
+            font-size: 22px;
+        }
+
+        .story-footer {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .story-kpi {
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .story-kpi label {
+            display: block;
+            font-size: 12px;
+            color: rgba(255,255,255,0.74);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .story-kpi strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 24px;
+        }
+
+        .story-kpi span {
+            display: block;
+            margin-top: 6px;
+            color: rgba(255,255,255,0.82);
+            font-size: 13px;
+        }
+
+        .form-panel {
+            background: var(--paper);
+            padding: 26px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 32px;
-            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
         }
-        
-        .login-box {
+
+        .form-card {
             width: 100%;
-            max-width: 400px;
-            text-align: center;
+            padding: 8px;
         }
-        
-        .login-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 8px;
-        }
-        
-        .logo-container {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .logo-image {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 10px;
-        }
-        
-        .login-subtitle {
-            font-size: 14px;
-            color: #909399;
-            margin-bottom: 32px;
-        }
-        
-        .form-container {
-            text-align: left;
-        }
-        
-        .el-form-item {
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
             margin-bottom: 24px;
         }
-        
-        .el-input {
-            border-radius: 8px;
+
+        .brand-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #d97a38, #a6511a);
+            box-shadow: 0 16px 30px rgba(159, 79, 24, 0.2);
         }
-        
-        .login-btn {
+
+        .brand-logo img {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+        }
+
+        .brand-row h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .brand-row p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .welcome-block {
+            margin-bottom: 20px;
+        }
+
+        .welcome-block h2 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        .welcome-block p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .form-tips {
+            display: grid;
+            gap: 10px;
+            margin: 18px 0 22px;
+        }
+
+        .tip-item {
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.66);
+            border: 1px solid rgba(117, 87, 49, 0.12);
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 13px;
+        }
+
+        .el-form-item {
+            margin-bottom: 18px;
+        }
+
+        .el-input__wrapper {
+            min-height: 48px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.9);
+            box-shadow: none;
+            border: 1px solid transparent;
+        }
+
+        .el-input__wrapper.is-focus {
+            border-color: rgba(198, 106, 43, 0.34);
+        }
+
+        .primary-btn.el-button,
+        .secondary-btn.el-button {
             width: 100%;
             height: 48px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-            border: none;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            color: white;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 15px;
         }
-        
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(96, 165, 250, 0.35);
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+
+        .primary-btn.el-button {
+            --el-button-bg-color: var(--accent);
+            --el-button-border-color: var(--accent);
+            --el-button-hover-bg-color: var(--accent-strong);
+            --el-button-hover-border-color: var(--accent-strong);
+            --el-button-active-bg-color: var(--accent-strong);
+            --el-button-active-border-color: var(--accent-strong);
+            --el-button-text-color: #fff;
+            box-shadow: 0 14px 24px rgba(159, 79, 24, 0.18);
         }
-        
-        .switch-mode {
+
+        .secondary-btn.el-button {
+            --el-button-bg-color: var(--mint);
+            --el-button-border-color: var(--mint);
+            --el-button-hover-bg-color: #17665b;
+            --el-button-hover-border-color: #17665b;
+            --el-button-active-bg-color: #17665b;
+            --el-button-active-border-color: #17665b;
+            --el-button-text-color: #fff;
+        }
+
+        .mode-switch {
+            margin-top: 18px;
             text-align: center;
-            margin-top: 20px;
-        }
-        
-        .switch-link {
-            color: #60a5fa;
-            cursor: pointer;
+            color: var(--muted);
             font-size: 14px;
+        }
+
+        .mode-switch a {
+            color: var(--accent-strong);
+            cursor: pointer;
+            font-weight: 700;
             text-decoration: none;
-            transition: color 0.3s ease;
         }
-        
-        .switch-link:hover {
-            color: #3b82f6;
-        }
-        
-        .demo-info {
-            background: linear-gradient(135deg, rgba(239, 246, 255, 0.9) 0%, rgba(219, 234, 254, 0.7) 100%);
-            border-radius: 8px;
+
+        .demo-box {
+            margin-top: 22px;
             padding: 16px;
-            margin-top: 24px;
-            font-size: 12px;
-            color: #3b82f6;
-            border: 1px solid rgba(96, 165, 250, 0.3);
-            line-height: 1.5;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.72);
+            border: 1px solid rgba(117, 87, 49, 0.12);
         }
-        
-        .demo-accounts {
+
+        .demo-box strong {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .demo-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .demo-account {
             display: flex;
             justify-content: space-between;
-            margin-top: 8px;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(246, 239, 228, 0.9);
+            color: #5a4530;
+            font-size: 13px;
         }
-        
-        .demo-account {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            color: #666;
-        }
-        
-        @media (max-width: 1024px) {
-            .login-container {
-                flex-direction: column;
+
+        @media (max-width: 1100px) {
+            .login-layout {
+                grid-template-columns: 1fr;
             }
-            
-            .left-section {
-                height: 40vh;
-                min-height: 300px;
-            }
-            
-            .right-section {
-                width: 100%;
-                height: 60vh;
-                padding: 20px;
-            }
-            
-            .left-title {
-                font-size: 2rem;
-            }
-            
-            .left-subtitle {
-                font-size: 1rem;
+
+            .story-footer,
+            .story-grid {
+                grid-template-columns: 1fr;
             }
         }
-        
-        @media (max-width: 480px) {
-            .left-section {
-                height: 35vh;
-                min-height: 250px;
+
+        @media (max-width: 720px) {
+            .login-shell {
+                width: calc(100vw - 16px);
+                margin: 8px auto;
+                padding: 10px;
+                border-radius: 20px;
             }
-            
-            .right-section {
-                height: 65vh;
-                padding: 15px;
+
+            .story-panel,
+            .form-panel {
+                border-radius: 18px;
             }
-            
-            .left-title {
-                font-size: 1.5rem;
+
+            .story-panel,
+            .form-panel {
+                padding: 18px;
             }
-            
-            .left-subtitle {
-                font-size: 0.9rem;
-            }
-            
-            .demo-accounts {
-                flex-direction: column;
-                gap: 8px;
+
+            .story-title {
+                max-width: none;
             }
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <div class="login-container">
-            <!-- 左侧背景区域 -->
-            <div class="left-section">
-                <div class="left-content">
-                    <h1 class="left-title">智慧停车位检测系统</h1>
-                    <p class="left-subtitle">基于YOLO11-OBB深度学习技术的停车位智能检测平台，支持实时识别停车位占用状态</p>
-                    <div class="left-features">
-                        <div class="feature-item">
-                            <div class="feature-icon">🌿</div>
-                            <span>停车位状态识别</span>
-                        </div>
-                        <div class="feature-item">
-                            <div class="feature-icon">🧠</div>
-                            <span>深度学习诊断</span>
-                        </div>
-                        <div class="feature-item">
-                            <div class="feature-icon">📊</div>
-                            <span>停车位检测</span>
-                        </div>
-                        <div class="feature-item">
-                            <div class="feature-icon">⚡</div>
-                            <span>多目标定位</span>
+        <div class="login-shell">
+            <div class="login-layout">
+                <section class="story-panel">
+                    <div class="story-top">
+                        <div class="story-badge">Smart Parking Detection Platform</div>
+                        <h1 class="story-title">让入口先说明白系统能做什么。</h1>
+                        <p class="story-copy">
+                            这套系统不只是一张上传图片的页面，而是一个覆盖图像检测、视频分析、实时监控和模型数据回看的一体化工作台。
+                            登录后，你会先进入总览工作台，再根据任务进入具体模块。
+                        </p>
+                        <div class="story-grid">
+                            <div class="story-card">
+                                <div class="story-icon">📸</div>
+                                <strong>图像检测</strong>
+                                <span>快速验证单张图片中的停车位状态，适合首次演示和样例对比。</span>
+                            </div>
+                            <div class="story-card">
+                                <div class="story-icon">🎬</div>
+                                <strong>视频检测</strong>
+                                <span>处理完整录像并输出统计结果，适合离线分析停车场时序变化。</span>
+                            </div>
+                            <div class="story-card">
+                                <div class="story-icon">📹</div>
+                                <strong>实时检测</strong>
+                                <span>面向摄像头流做在线监看，适合答辩展示和实时监控场景。</span>
+                            </div>
+                            <div class="story-card">
+                                <div class="story-icon">📊</div>
+                                <strong>模型数据</strong>
+                                <span>查看训练与验证证据链，把模型表现讲得更清楚、更有说服力。</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <!-- 右侧登录区域 -->
-            <div class="right-section">
-                <div class="login-box">
-                    <div class="logo-container">
-                        <img src="./images/logo.png" alt="Logo" class="logo-image" />
+                    <div class="story-footer">
+                        <div class="story-kpi">
+                            <label>入口体验</label>
+                            <strong>先总览</strong>
+                            <span>不再一登录就掉进单页工具。</span>
+                        </div>
+                        <div class="story-kpi">
+                            <label>操作路径</label>
+                            <strong>更清晰</strong>
+                            <span>按任务自然分流到四类能力。</span>
+                        </div>
+                        <div class="story-kpi">
+                            <label>视觉风格</label>
+                            <strong>更统一</strong>
+                            <span>暖色工作台风格，减少工具页割裂感。</span>
+                        </div>
                     </div>
-                    <h1 class="login-title">欢迎使用</h1>
-                    <p class="login-subtitle">{{ subtitleText }}</p>
-                
-                <div class="form-container">
-                    <!-- 登录表单 -->
-                    <el-form v-if="!isRegister" @submit.prevent="handleLogin">
-                        <el-form-item>
-                            <el-input
-                                v-model="loginForm.username"
-                                placeholder="用户名"
-                                size="large"
-                                clearable
-                            >
-                                <template #prefix>
-                                    <span style="font-size: 16px;">👤</span>
-                                </template>
-                            </el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-input
-                                v-model="loginForm.password"
-                                type="password"
-                                placeholder="密码"
-                                size="large"
-                                show-password
-                                @keyup.enter="handleLogin"
-                            >
-                                <template #prefix>
-                                    <span style="font-size: 16px;">🔒</span>
-                                </template>
-                            </el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button
-                                type="primary"
-                                :loading="loginLoading"
-                                class="login-btn"
-                                @click="handleLogin"
-                            >
-                                {{ loginLoading ? '登录中...' : '登录' }}
-                            </el-button>
-                        </el-form-item>
-                    </el-form>
-                    
-                    <!-- 注册表单 -->
-                    <el-form v-else @submit.prevent="handleRegister">
-                        <el-form-item>
-                            <el-input
-                                v-model="registerForm.username"
-                                placeholder="用户名（至少3位）"
-                                size="large"
-                                clearable
-                            >
-                                <template #prefix>
-                                    <span style="font-size: 16px;">👤</span>
-                                </template>
-                            </el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-input
-                                v-model="registerForm.password"
-                                type="password"
-                                placeholder="密码（至少6位）"
-                                size="large"
-                                show-password
-                            >
-                                <template #prefix>
-                                    <span style="font-size: 16px;">🔒</span>
-                                </template>
-                            </el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-input
-                                v-model="registerForm.realName"
-                                placeholder="真实姓名（可选）"
-                                size="large"
-                                clearable
-                                @keyup.enter="handleRegister"
-                            >
-                                <template #prefix>
-                                    <span style="font-size: 16px;">🤖</span>
-                                </template>
-                            </el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button
-                                type="success"
-                                :loading="registerLoading"
-                                class="login-btn"
-                                @click="handleRegister"
-                            >
-                                {{ registerLoading ? '注册中...' : '注册' }}
-                            </el-button>
-                        </el-form-item>
-                    </el-form>
-                    
-                    <div class="switch-mode">
-                        <span class="switch-link" @click="toggleMode">
-                            {{ switchText }}
-                        </span>
+                </section>
+
+                <aside class="form-panel">
+                    <div class="form-card">
+                        <div class="brand-row">
+                            <div class="brand-logo">
+                                <img src="./images/logo.png" alt="Logo">
+                            </div>
+                            <div>
+                                <h1>智慧交通停车位检测</h1>
+                                <p>登录后进入系统工作台，按引导选择检测方式。</p>
+                            </div>
+                        </div>
+
+                        <div class="welcome-block">
+                            <h2>{{ subtitleText }}</h2>
+                            <p>现在的入口会先把系统能力讲清楚，再进入具体页面，减少“功能分散、看不懂下一步”的感觉。</p>
+                        </div>
+
+                        <div class="form-tips">
+                            <div class="tip-item">推荐从图像检测开始，先快速确认模型输出是否符合预期。</div>
+                            <div class="tip-item">如果你是第一次使用，登录后可以直接在工作台里看到所有功能入口和建议路径。</div>
+                        </div>
+
+                        <el-form v-if="!isRegister" @submit.prevent="handleLogin">
+                            <el-form-item>
+                                <el-input
+                                    v-model="loginForm.username"
+                                    placeholder="请输入用户名"
+                                    size="large"
+                                    clearable
+                                >
+                                    <template #prefix>👤</template>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-input
+                                    v-model="loginForm.password"
+                                    type="password"
+                                    placeholder="请输入密码"
+                                    size="large"
+                                    show-password
+                                    @keyup.enter="handleLogin"
+                                >
+                                    <template #prefix>🔒</template>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button
+                                    type="primary"
+                                    :loading="loginLoading"
+                                    class="primary-btn"
+                                    @click="handleLogin"
+                                >
+                                    {{ loginLoading ? '登录中...' : '进入工作台' }}
+                                </el-button>
+                            </el-form-item>
+                        </el-form>
+
+                        <el-form v-else @submit.prevent="handleRegister">
+                            <el-form-item>
+                                <el-input
+                                    v-model="registerForm.username"
+                                    placeholder="用户名（至少3位）"
+                                    size="large"
+                                    clearable
+                                >
+                                    <template #prefix>👤</template>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-input
+                                    v-model="registerForm.password"
+                                    type="password"
+                                    placeholder="密码（至少6位）"
+                                    size="large"
+                                    show-password
+                                >
+                                    <template #prefix>🔒</template>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-input
+                                    v-model="registerForm.realName"
+                                    placeholder="姓名或昵称（可选）"
+                                    size="large"
+                                    clearable
+                                    @keyup.enter="handleRegister"
+                                >
+                                    <template #prefix>🪪</template>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button
+                                    type="success"
+                                    :loading="registerLoading"
+                                    class="secondary-btn"
+                                    @click="handleRegister"
+                                >
+                                    {{ registerLoading ? '注册中...' : '创建账户' }}
+                                </el-button>
+                            </el-form-item>
+                        </el-form>
+
+                        <div class="mode-switch">
+                            <a @click="toggleMode">{{ switchText }}</a>
+                        </div>
+
+                        <div class="demo-box">
+                            <strong>演示账户</strong>
+                            <div class="demo-grid">
+                                <div class="demo-account">
+                                    <span>管理员账户</span>
+                                    <span>admin / 123456</span>
+                                </div>
+                                <div class="demo-account">
+                                    <span>普通用户账户</span>
+                                    <span>user / 123456</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="demo-info">
-                    <div>💡 演示账户</div>
-                    <div class="demo-accounts">
-                        <div class="demo-account">admin / 123456</div>
-                        <div class="demo-account">user / 123456</div>
-                    </div>
-                </div>
+                </aside>
             </div>
         </div>
     </div>
-    </div>
 
     <script>
-        // API配置
         const API_CONFIG = {
-            baseURL: 'http://localhost:5011',  // 可以根据需要修改host和port
+            baseURL: 'http://localhost:5011',
             endpoints: {
                 login: '/api/user/login',
                 register: '/api/user/register'
             }
         };
 
-        // 用户缓存管理
         const UserCache = {
-            // 缓存键名
             USER_KEY: 'yyxz_core_user_info',
-            
-            // 保存用户信息到缓存
             saveUser(userInfo) {
                 localStorage.setItem(this.USER_KEY, JSON.stringify(userInfo));
             },
-            
-            // 从缓存获取用户信息
             getUser() {
                 const userStr = localStorage.getItem(this.USER_KEY);
                 return userStr ? JSON.parse(userStr) : null;
             },
-            
-            // 清除用户缓存
             clearUser() {
                 localStorage.removeItem(this.USER_KEY);
             },
-            
-            // 检查是否已登录
             isLoggedIn() {
                 return !!this.getUser();
             }
@@ -499,32 +634,29 @@
             },
             computed: {
                 subtitleText() {
-                    return this.isRegister ? '创建新账户' : '登录到您的账户';
+                    return this.isRegister ? '创建你的账户' : '登录并进入系统工作台';
                 },
                 switchText() {
-                    return this.isRegister ? '已有账户？立即登录' : '没有账户？立即注册';
+                    return this.isRegister ? '已有账户？返回登录' : '没有账户？先创建一个';
                 }
             },
             mounted() {
-                // 检查是否已登录，如果已登录则直接跳转到检测页面
                 if (UserCache.isLoggedIn()) {
-                    window.location.href = './detect.html';
+                    window.location.href = './dashboard.html';
                 }
             },
             methods: {
                 toggleMode() {
                     this.isRegister = !this.isRegister;
-                    // 清空表单
                     this.loginForm = { username: '', password: '' };
                     this.registerForm = { username: '', password: '', realName: '' };
                 },
-                
                 async handleLogin() {
                     if (!this.loginForm.username || !this.loginForm.password) {
                         ElMessage.error('请输入用户名和密码');
                         return;
                     }
-                    
+
                     this.loginLoading = true;
                     try {
                         const response = await fetch(API_CONFIG.baseURL + API_CONFIG.endpoints.login, {
@@ -534,14 +666,12 @@
                             },
                             body: JSON.stringify(this.loginForm)
                         });
-                        
+
                         const result = await response.json();
                         if (result.code === 200) {
-                            ElMessage.success('登录成功');
-                            // 保存用户信息到缓存
                             UserCache.saveUser(result.data.user);
-                            // 跳转到检测页面
-                            window.location.href = './detect.html';
+                            ElMessage.success('登录成功');
+                            window.location.href = './dashboard.html';
                         } else {
                             ElMessage.error(result.message);
                         }
@@ -551,23 +681,22 @@
                         this.loginLoading = false;
                     }
                 },
-                
                 async handleRegister() {
                     if (!this.registerForm.username || !this.registerForm.password) {
                         ElMessage.error('请输入用户名和密码');
                         return;
                     }
-                    
+
                     if (this.registerForm.username.length < 3) {
                         ElMessage.error('用户名至少3位');
                         return;
                     }
-                    
+
                     if (this.registerForm.password.length < 6) {
                         ElMessage.error('密码至少6位');
                         return;
                     }
-                    
+
                     this.registerLoading = true;
                     try {
                         const response = await fetch(API_CONFIG.baseURL + API_CONFIG.endpoints.register, {
@@ -577,11 +706,10 @@
                             },
                             body: JSON.stringify(this.registerForm)
                         });
-                        
+
                         const result = await response.json();
                         if (result.code === 200) {
                             ElMessage.success('注册成功，请登录');
-                            // 切换到登录模式并填充用户名
                             this.isRegister = false;
                             this.loginForm.username = this.registerForm.username;
                             this.registerForm = { username: '', password: '', realName: '' };
@@ -598,4 +726,4 @@
         }).use(ElementPlus).mount('#app');
     </script>
 </body>
-</html> 
+</html>

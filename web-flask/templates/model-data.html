@@ -1,14 +1,3 @@
-<!-- MD5: c72813f38ec0092304477101a3e24669 -->
-<!--
-版权所有 © 2025 羊羊小栈 (GJQ)
-
-作者：羊羊小栈
-时间：2025-07-31 16:25:08
-
-本系统为原创作品，禁止二次销售！禁止将系统对应的视频、文档进行二次发布！
-违者需立即停止侵权行为，并按照【羊羊小栈系统版权声明及保护条款】中规定数额进行赔偿，并承担相应法律责任。
--->
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -20,308 +9,321 @@
     <script src="https://unpkg.com/@element-plus/icons-vue@2.1.0/dist/index.iife.min.js"></script>
     <script src="https://unpkg.com/echarts@5.4.3/dist/echarts.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/element-plus@2.4.1/dist/index.css">
+    <link rel="stylesheet" href="/static/css/workspace-ui.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
-        }
-        
-        #app {
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        .data-container {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: #ffffff;
-        }
-        
-        .data-header {
-            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
-            padding: 20px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            flex-shrink: 0;
-        }
-        
-        .header-title {
-            margin: 0;
-            color: white;
-            font-weight: 700;
-            font-size: 1.4rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-        
-        .close-btn {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
+        .model-data-page {
+            grid-template-rows: auto auto minmax(0, 1fr);
         }
 
-        .data-main {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-            min-height: 0;
+        .chart-card {
+            padding: 18px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.74);
+            border: 1px solid rgba(133, 93, 44, 0.12);
         }
-        
+
         .training-chart {
             width: 100%;
-            height: 350px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 24px;
+            height: 360px;
         }
-        
-        .charts-container {
+
+        .accuracy-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
         }
-        
-        .validation-container {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+        .accuracy-card {
+            padding: 14px;
+            border-radius: 18px;
+            background: rgba(246, 239, 228, 0.82);
+            border: 1px solid rgba(133, 93, 44, 0.12);
         }
-        
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #303133;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+
+        .accuracy-card label {
+            display: block;
+            color: var(--workspace-muted);
+            font-size: 12px;
         }
-        
-        .accuracy-info {
-            background: #eff6ff;
-            border: 1px solid #dbeafe;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
+
+        .accuracy-card strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 20px;
         }
-        
-        .accuracy-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .accuracy-item:last-child {
-            margin-bottom: 0;
-        }
-        
-        .accuracy-label {
-            font-weight: 500;
-            color: #374151;
-        }
-        
-        .accuracy-value {
-            font-weight: 600;
-            color: #3b82f6;
-            font-size: 16px;
-        }
-        
+
         .images-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 16px;
-            margin-top: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px;
         }
-        
+
         .image-item {
-            background: #fafafa;
-            border-radius: 8px;
             padding: 12px;
-            border: 1px solid #e4e7ed;
-            transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.74);
+            border: 1px solid rgba(133, 93, 44, 0.12);
         }
-        
-        .image-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        
+
         .image-item img {
             width: 100%;
-            border-radius: 6px;
+            border-radius: 14px;
             cursor: pointer;
         }
-        
+
         .image-name {
-            text-align: center;
             margin-top: 8px;
+            color: var(--workspace-muted);
             font-size: 12px;
-            color: #909399;
-        }
-        
-        .loading-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 300px;
-            flex-direction: column;
-            color: #909399;
-        }
-        
-        .error-container {
             text-align: center;
-            padding: 40px;
-            color: #f56c6c;
         }
-        
+
+        .loading-container,
+        .error-container,
         .empty-container {
+            padding: 44px 18px;
             text-align: center;
-            padding: 40px;
-            color: #909399;
+            color: var(--workspace-muted);
+        }
+
+        .error-container {
+            color: var(--workspace-danger);
+        }
+
+        @media (max-width: 900px) {
+            .accuracy-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <div class="data-container">
-            <!-- 头部 -->
-            <div class="data-header">
-                <h2 class="header-title">{{ pageTitle }}</h2>
-                <el-button class="close-btn" @click="closeWindow">关闭</el-button>
-            </div>
-            
-            <!-- 主内容区域 -->
-            <div class="data-main">
-                <!-- 训练数据图表 -->
-                <div v-if="dataType === 'training'">
-                    <div v-if="loading" class="loading-container" v-loading="loading">
-                        <div style="height: 100px;"></div>
-                        <p style="margin-top: 16px;">加载训练数据中...</p>
+        <div class="workspace-shell">
+            <div class="workspace-page model-data-page">
+                <header class="workspace-topbar">
+                    <div class="workspace-brand">
+                        <div class="workspace-logo">
+                            <img src="./images/logo.png" alt="Logo">
+                        </div>
+                        <div class="workspace-brand-copy">
+                            <h1>{{ pageTitle }}</h1>
+                            <p>把训练曲线、验证指标和测试样例拆成更清晰的小模块，方便演示和复盘。</p>
+                        </div>
                     </div>
-                    
-                    <div v-else-if="error" class="error-container">
-                        <div>❌ {{ error }}</div>
+                    <div class="workspace-actions">
+                        <div class="workspace-chip">
+                            当前视图
+                            <strong>{{ dataType === 'training' ? '训练数据' : '验证数据' }}</strong>
+                        </div>
+                        <div class="workspace-chip">
+                            模型键
+                            <strong>{{ modelKey || '未指定' }}</strong>
+                        </div>
+                        <el-button class="workspace-ghost" @click="goToDashboard">工作台</el-button>
+                        <el-button class="workspace-danger" @click="closeWindow">关闭</el-button>
                     </div>
-                    
-                    <div v-else-if="trainingData && trainingData.length > 0">
-                        <div class="section-title">📊 训练过程数据</div>
-                        <div class="charts-container">
-                            <div>
-                                <h4 style="margin: 0 0 16px 0; color: #303133; font-size: 16px;">损失曲线</h4>
+                </header>
+
+                <section class="workspace-hero">
+                    <div>
+                        <div class="workspace-kicker">Model Evidence Review</div>
+                        <h2>{{ dataType === 'training' ? '看训练过程曲线，确认模型是不是在收敛。' : '看验证指标和样例，把模型表现讲清楚。' }}</h2>
+                        <p>
+                            这个页面不再只是一个“图表仓库”，而是把模型证据链拆成易读的内容块。
+                            训练视图重点看损失和精度变化，验证视图重点看指标、分类表现和测试图片。
+                        </p>
+                        <div class="workspace-metrics">
+                            <div class="metric-card">
+                                <div class="metric-label">当前模式</div>
+                                <div class="metric-value">{{ dataType === 'training' ? '训练复盘' : '验证复盘' }}</div>
+                                <div class="metric-help">不同模式各看不同证据，避免所有信息混在一起。</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">当前模型</div>
+                                <div class="metric-value">{{ modelKey || '--' }}</div>
+                                <div class="metric-help">页面参数会决定读取哪一个模型的训练或验证结果。</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">最适合</div>
+                                <div class="metric-value">调参 / 答辩</div>
+                                <div class="metric-help">适合解释模型为什么有效，以及如何继续优化。</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <aside class="guide-card">
+                        <h3>建议阅读顺序</h3>
+                        <p>给数据页加上“怎么看”的说明，而不是只扔图表和表格。</p>
+                        <div class="guide-list">
+                            <div class="guide-item">
+                                <div class="guide-index">01</div>
+                                <div>
+                                    <strong>先看整体趋势</strong>
+                                    <span>训练模式先看损失和精度曲线整体有没有稳定收敛。</span>
+                                </div>
+                            </div>
+                            <div class="guide-item">
+                                <div class="guide-index">02</div>
+                                <div>
+                                    <strong>再看关键指标</strong>
+                                    <span>验证模式重点看 Precision、Recall 和 mAP，先判断模型是否可用。</span>
+                                </div>
+                            </div>
+                            <div class="guide-item">
+                                <div class="guide-index">03</div>
+                                <div>
+                                    <strong>最后看样例证据</strong>
+                                    <span>用测试图片和类别表格支撑结论，避免只报数字没有画面佐证。</span>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </section>
+
+                <section class="stack workspace-scroll">
+                    <article class="surface-card" v-if="dataType === 'training'">
+                        <div v-if="loading" class="loading-container" v-loading="loading">
+                            加载训练数据中...
+                        </div>
+
+                        <div v-else-if="error" class="error-container">
+                            ❌ {{ error }}
+                        </div>
+
+                        <div v-else-if="trainingData && trainingData.length > 0" class="stack">
+                            <div class="card-head">
+                                <div>
+                                    <div class="card-eyebrow">Training Curves</div>
+                                    <div class="card-title">训练过程数据</div>
+                                    <div class="card-subtitle">把两张核心曲线分开成两个卡片，减少大图表带来的压迫感。</div>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <strong>损失曲线</strong>
                                 <div id="lossChart" class="training-chart"></div>
                             </div>
-                            <div>
-                                <h4 style="margin: 0 0 16px 0; color: #303133; font-size: 16px;">精度曲线</h4>
+                            <div class="chart-card">
+                                <strong>精度曲线</strong>
                                 <div id="accuracyChart" class="training-chart"></div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div v-else class="empty-container">
-                        <div>📊 暂无训练数据</div>
-                    </div>
-                </div>
-                
-                <!-- 验证数据展示 -->
-                <div v-if="dataType === 'validation'">
-                    <div v-if="loading" class="loading-container" v-loading="loading">
-                        <div style="height: 100px;"></div>
-                        <p style="margin-top: 16px;">加载验证数据中...</p>
-                    </div>
-                    
-                    <div v-else-if="error" class="error-container">
-                        <div>❌ {{ error }}</div>
-                    </div>
-                    
-                    <div v-else-if="validationData">
-                        <!-- 检测精度信息 -->
-                        <div class="section-title" v-if="validationData.accuracy">🎯 检测精度</div>
-                        <div class="accuracy-info" v-if="validationData.accuracy">
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">精度 (Precision):</span>
-                                <span class="accuracy-value">{{ (validationData.accuracy.precision * 100).toFixed(2) }}%</span>
-                            </div>
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">召回率 (Recall):</span>
-                                <span class="accuracy-value">{{ (validationData.accuracy.recall * 100).toFixed(2) }}%</span>
-                            </div>
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">mAP@0.5:</span>
-                                <span class="accuracy-value">{{ (validationData.accuracy.mAP50 * 100).toFixed(2) }}%</span>
-                            </div>
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">mAP@0.5-0.95:</span>
-                                <span class="accuracy-value">{{ (validationData.accuracy.mAP50_95 * 100).toFixed(2) }}%</span>
-                            </div>
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">测试图像数:</span>
-                                <span class="accuracy-value">{{ validationData.accuracy.images }}</span>
-                            </div>
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">检测实例数:</span>
-                                <span class="accuracy-value">{{ validationData.accuracy.instances }}</span>
-                            </div>
-                        </div>
-                        
-                        <!-- 各类别检测精度 -->
-                        <div class="section-title" v-if="validationData.class_results && validationData.class_results.length > 0">📊 各类别检测精度</div>
-                        <div v-if="validationData.class_results && validationData.class_results.length > 0" class="class-results-table">
-                            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                                <thead>
-                                    <tr style="background-color: #f5f7fa;">
-                                        <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">类别</th>
-                                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">图像数</th>
-                                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">实例数</th>
-                                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">精度</th>
-                                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">召回率</th>
-                                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">mAP@0.5</th>
-                                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">mAP@0.5-0.95</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="classResult in validationData.class_results" :key="classResult.class_name">
-                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">{{ classResult.class_name }}</td>
-                                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{ classResult.images }}</td>
-                                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{ classResult.instances }}</td>
-                                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{ (classResult.precision * 100).toFixed(1) }}%</td>
-                                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{ (classResult.recall * 100).toFixed(1) }}%</td>
-                                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{ (classResult.mAP50 * 100).toFixed(1) }}%</td>
-                                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{ (classResult.mAP50_95 * 100).toFixed(1) }}%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <!-- 验证图片 -->
-                        <div class="section-title">🖼️ 测试集图片</div>
-                        <div v-if="validationData.images && validationData.images.length > 0" class="images-grid">
-                            <div v-for="image in validationData.images" :key="image.name" class="image-item">
-                                <img :src="image.url" :alt="image.name" @click="previewImage(image.url)" />
-                                <div class="image-name">{{ image.name }}</div>
-                            </div>
-                        </div>
+
                         <div v-else class="empty-container">
-                            <div>🖼️ 暂无验证图片</div>
+                            📊 暂无训练数据
                         </div>
-                    </div>
-                    
-                    <div v-else class="empty-container">
-                        <div>🖼️ 暂无验证数据</div>
-                    </div>
-                </div>
+                    </article>
+
+                    <article class="surface-card" v-if="dataType === 'validation'">
+                        <div v-if="loading" class="loading-container" v-loading="loading">
+                            加载验证数据中...
+                        </div>
+
+                        <div v-else-if="error" class="error-container">
+                            ❌ {{ error }}
+                        </div>
+
+                        <div v-else-if="validationData" class="stack">
+                            <div v-if="validationData.accuracy" class="stack">
+                                <div class="card-head">
+                                    <div>
+                                        <div class="card-eyebrow">Validation Metrics</div>
+                                        <div class="card-title">检测精度概览</div>
+                                        <div class="card-subtitle">先用摘要卡看核心指标，再决定是否深入看各类别表现。</div>
+                                    </div>
+                                </div>
+                                <div class="accuracy-grid">
+                                    <div class="accuracy-card">
+                                        <label>Precision</label>
+                                        <strong>{{ (validationData.accuracy.precision * 100).toFixed(2) }}%</strong>
+                                    </div>
+                                    <div class="accuracy-card">
+                                        <label>Recall</label>
+                                        <strong>{{ (validationData.accuracy.recall * 100).toFixed(2) }}%</strong>
+                                    </div>
+                                    <div class="accuracy-card">
+                                        <label>mAP@0.5</label>
+                                        <strong>{{ (validationData.accuracy.mAP50 * 100).toFixed(2) }}%</strong>
+                                    </div>
+                                    <div class="accuracy-card">
+                                        <label>mAP@0.5-0.95</label>
+                                        <strong>{{ (validationData.accuracy.mAP50_95 * 100).toFixed(2) }}%</strong>
+                                    </div>
+                                    <div class="accuracy-card">
+                                        <label>测试图像数</label>
+                                        <strong>{{ validationData.accuracy.images }}</strong>
+                                    </div>
+                                    <div class="accuracy-card">
+                                        <label>检测实例数</label>
+                                        <strong>{{ validationData.accuracy.instances }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="validationData.class_results && validationData.class_results.length > 0" class="stack">
+                                <div class="card-head">
+                                    <div>
+                                        <div class="card-eyebrow">Class Breakdown</div>
+                                        <div class="card-title">各类别检测精度</div>
+                                        <div class="card-subtitle">把类别表现放到可滚动表格中，更适合横向比较。</div>
+                                    </div>
+                                </div>
+                                <div class="table-shell">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>类别</th>
+                                                <th>图像数</th>
+                                                <th>实例数</th>
+                                                <th>精度</th>
+                                                <th>召回率</th>
+                                                <th>mAP@0.5</th>
+                                                <th>mAP@0.5-0.95</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="classResult in validationData.class_results" :key="classResult.class_name">
+                                                <td>{{ classResult.class_name }}</td>
+                                                <td>{{ classResult.images }}</td>
+                                                <td>{{ classResult.instances }}</td>
+                                                <td>{{ (classResult.precision * 100).toFixed(1) }}%</td>
+                                                <td>{{ (classResult.recall * 100).toFixed(1) }}%</td>
+                                                <td>{{ (classResult.mAP50 * 100).toFixed(1) }}%</td>
+                                                <td>{{ (classResult.mAP50_95 * 100).toFixed(1) }}%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="stack">
+                                <div class="card-head">
+                                    <div>
+                                        <div class="card-eyebrow">Validation Samples</div>
+                                        <div class="card-title">测试集图片</div>
+                                        <div class="card-subtitle">用样例图做结果解释，避免只有数字没有可视化证据。</div>
+                                    </div>
+                                </div>
+                                <div v-if="validationData.images && validationData.images.length > 0" class="images-grid">
+                                    <div v-for="image in validationData.images" :key="image.name" class="image-item">
+                                        <img :src="image.url" :alt="image.name" @click="previewImage(image.url)">
+                                        <div class="image-name">{{ image.name }}</div>
+                                    </div>
+                                </div>
+                                <div v-else class="empty-container">
+                                    🖼️ 暂无验证图片
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-else class="empty-container">
+                            🖼️ 暂无验证数据
+                        </div>
+                    </article>
+                </section>
             </div>
         </div>
-        
-        <!-- 图片预览对话框 -->
+
         <el-dialog
             v-model="showPreview"
             title="图片预览"
@@ -329,13 +331,12 @@
             center
         >
             <div style="text-align: center;">
-                <img :src="previewImageUrl" style="max-width: 100%; max-height: 70vh;" />
+                <img :src="previewImageUrl" style="max-width: 100%; max-height: 70vh;">
             </div>
         </el-dialog>
     </div>
 
     <script>
-        // API配置
         const API_CONFIG = {
             baseURL: 'http://localhost:5011',
             endpoints: {
@@ -344,7 +345,6 @@
         };
 
         const { createApp } = Vue;
-        const { ElMessage, ElLoading } = ElementPlus;
 
         const app = createApp({
             data() {
@@ -364,9 +364,9 @@
             computed: {
                 pageTitle() {
                     if (this.dataType === 'training') {
-                        return '📊 训练数据查看';
+                        return '训练数据查看';
                     } else if (this.dataType === 'validation') {
-                        return '🖼️ 测试数据查看';
+                        return '测试数据查看';
                     }
                     return '模型数据查看';
                 }
@@ -381,24 +381,23 @@
                     this.dataType = urlParams.get('type') || '';
                     this.modelKey = urlParams.get('model') || '';
                 },
-                
+
                 async loadData() {
                     if (!this.dataType || !this.modelKey) {
                         this.error = '缺少必要参数';
                         return;
                     }
-                    
+
                     this.loading = true;
                     this.error = null;
-                    
+
                     try {
                         const response = await fetch(`${API_CONFIG.baseURL}${API_CONFIG.endpoints.modelData}?type=${this.dataType}&model=${this.modelKey}`);
                         const result = await response.json();
-                        
+
                         if (result.code === 200) {
                             if (this.dataType === 'training') {
                                 this.trainingData = result.data;
-                                // 使用Vue的$nextTick确保DOM更新后再初始化图表
                                 this.$nextTick(() => {
                                     setTimeout(() => {
                                         this.initTrainingCharts();
@@ -416,33 +415,30 @@
                         this.loading = false;
                     }
                 },
-                
+
                 initTrainingCharts() {
                     if (!this.trainingData || this.trainingData.length === 0) return;
-                    
                     this.initLossChart();
                     this.initAccuracyChart();
                 },
-                
+
                 initLossChart() {
                     const chartDom = document.getElementById('lossChart');
                     if (!chartDom) {
-                        console.error('Loss chart container not found');
                         return;
                     }
-                    
-                    // 如果已经有图表实例，先销毁
+
                     if (this.lossChart) {
                         this.lossChart.dispose();
                     }
-                    
+
                     this.lossChart = echarts.init(chartDom);
-                    
+
                     const epochs = this.trainingData.map(item => item.epoch);
                     const trainTotalLoss = this.trainingData.map(item => item.train_total_loss);
                     const valTotalLoss = this.trainingData.map(item => item.val_total_loss);
-                    
-                    const lossOption = {
+
+                    this.lossChart.setOption({
                         tooltip: {
                             trigger: 'axis',
                             axisPointer: {
@@ -479,7 +475,7 @@
                                 data: trainTotalLoss,
                                 smooth: true,
                                 lineStyle: {
-                                    color: '#f56c6c',
+                                    color: '#c66a2b',
                                     width: 2
                                 },
                                 symbol: 'circle',
@@ -491,45 +487,41 @@
                                 data: valTotalLoss,
                                 smooth: true,
                                 lineStyle: {
-                                    color: '#e6a23c',
+                                    color: '#1f7a6d',
                                     width: 2
                                 },
                                 symbol: 'circle',
                                 symbolSize: 4
                             }
                         ]
-                    };
-                    
-                    this.lossChart.setOption(lossOption);
+                    });
                 },
-                
+
                 initAccuracyChart() {
                     const chartDom = document.getElementById('accuracyChart');
                     if (!chartDom) {
-                        console.error('Accuracy chart container not found');
                         return;
                     }
-                    
-                    // 如果已经有图表实例，先销毁
+
                     if (this.accuracyChart) {
                         this.accuracyChart.dispose();
                     }
-                    
+
                     this.accuracyChart = echarts.init(chartDom);
-                    
+
                     const epochs = this.trainingData.map(item => item.epoch);
                     const precision = this.trainingData.map(item => item.precision);
                     const recall = this.trainingData.map(item => item.recall);
                     const map50 = this.trainingData.map(item => item.map50);
                     const map50_95 = this.trainingData.map(item => item.map50_95);
-                    
-                    const accuracyOption = {
+
+                    this.accuracyChart.setOption({
                         tooltip: {
                             trigger: 'axis',
                             axisPointer: {
                                 type: 'cross'
                             },
-                            formatter: function(params) {
+                            formatter(params) {
                                 let result = `Epoch ${params[0].axisValue}<br/>`;
                                 params.forEach(param => {
                                     const value = (param.value * 100).toFixed(2);
@@ -563,7 +555,7 @@
                             min: 0,
                             max: 1,
                             axisLabel: {
-                                formatter: function(value) {
+                                formatter(value) {
                                     return (value * 100).toFixed(0) + '%';
                                 }
                             }
@@ -575,7 +567,7 @@
                                 data: precision,
                                 smooth: true,
                                 lineStyle: {
-                                    color: '#10b981',
+                                    color: '#1f7a6d',
                                     width: 2
                                 },
                                 symbol: 'circle',
@@ -587,7 +579,7 @@
                                 data: recall,
                                 smooth: true,
                                 lineStyle: {
-                                    color: '#409eff',
+                                    color: '#2563eb',
                                     width: 2
                                 },
                                 symbol: 'circle',
@@ -599,7 +591,7 @@
                                 data: map50,
                                 smooth: true,
                                 lineStyle: {
-                                    color: '#e6a23c',
+                                    color: '#d48a1a',
                                     width: 2
                                 },
                                 symbol: 'circle',
@@ -611,33 +603,33 @@
                                 data: map50_95,
                                 smooth: true,
                                 lineStyle: {
-                                    color: '#f56c6c',
+                                    color: '#d64545',
                                     width: 2
                                 },
                                 symbol: 'circle',
                                 symbolSize: 4
                             }
                         ]
-                    };
-                    
-                    this.accuracyChart.setOption(accuracyOption);
-                    
-                    // 监听窗口大小变化
+                    });
+
                     window.addEventListener('resize', this.handleResize);
                 },
-                
+
                 previewImage(url) {
                     this.previewImageUrl = url;
                     this.showPreview = true;
                 },
-                
+
+                goToDashboard() {
+                    window.location.href = './dashboard.html';
+                },
+
                 closeWindow() {
                     window.close();
                 }
             },
-            
+
             beforeUnmount() {
-                // 销毁图表实例
                 if (this.lossChart) {
                     try {
                         this.lossChart.dispose();
@@ -645,7 +637,7 @@
                         console.warn('Loss chart dispose error:', e);
                     }
                 }
-                
+
                 if (this.accuracyChart) {
                     try {
                         this.accuracyChart.dispose();
@@ -653,13 +645,11 @@
                         console.warn('Accuracy chart dispose error:', e);
                     }
                 }
-                
-                // 移除窗口大小变化监听器
+
                 window.removeEventListener('resize', this.handleResize);
             },
-            
+
             created() {
-                // 绑定resize事件处理函数
                 this.handleResize = () => {
                     if (this.lossChart) {
                         this.lossChart.resize();
@@ -670,7 +660,7 @@
                 };
             }
         });
-        
+
         app.use(ElementPlus).mount('#app');
     </script>
 </body>

@@ -33,6 +33,15 @@ def index():
     return html_content, 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
+@app.route('/dashboard.html')
+def dashboard_html():
+    """系统工作台页面"""
+    dashboard_html_path = os.path.join('templates', 'dashboard.html')
+    with open(dashboard_html_path, 'r', encoding='utf-8') as f:
+        html_content = f.read()
+    return html_content, 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+
 @app.route('/images/<filename>')
 def serve_images(filename):
     """提供images目录下的静态文件"""
