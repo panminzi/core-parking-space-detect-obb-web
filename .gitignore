@@ -12,6 +12,9 @@ __pycache__/
 
 # Virtual environments and packaging leftovers
 .venv/
+.venv*/
+web-flask/.venv312/
+web-flask/.venv*/
 venv/
 env/
 ENV/
@@ -24,6 +27,7 @@ dist/
 .env
 .env.local
 .env.*.local
+web-flask/users.json
 
 # Runtime logs and temporary files
 *.log
