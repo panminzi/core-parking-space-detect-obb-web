@@ -286,6 +286,21 @@
                                 {{ processing ? '处理中...' : '开始处理' }}
                             </el-button>
                         </div>
+                        <div class="compact-hint-row">
+                            <el-tooltip content="建议上传较短、变化明显的视频，处理和复核都会更快。" placement="bottom">
+                                <div class="compact-hint">
+                                    <span class="compact-tip-icon">i</span>
+                                    <strong>快速提示</strong>
+                                    <span>短视频更适合验证</span>
+                                </div>
+                            </el-tooltip>
+                            <el-tooltip content="处理完成后优先查看结果视频和关键帧统计。" placement="bottom">
+                                <div class="compact-hint">
+                                    <span class="compact-tip-icon">i</span>
+                                    <span>先看结果，再看明细</span>
+                                </div>
+                            </el-tooltip>
+                        </div>
                         <div class="workspace-metrics">
                             <div class="metric-card">
                                 <div class="metric-label">检测方式</div>

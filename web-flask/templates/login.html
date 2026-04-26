@@ -118,16 +118,14 @@
 
         .story-title {
             margin: 18px 0 14px;
-            font-size: clamp(34px, 4vw, 56px);
-            line-height: 0.98;
-            max-width: 9ch;
+            font-size: clamp(24px, 2.4vw, 40px);
+            line-height: 1.1;
+            max-width: none;
+            white-space: nowrap;
         }
 
         .story-copy {
-            max-width: 580px;
-            color: rgba(255,255,255,0.88);
-            line-height: 1.85;
-            font-size: 15px;
+            display: none;
         }
 
         .story-grid {
@@ -168,12 +166,7 @@
         }
 
         .story-footer {
-            position: relative;
-            z-index: 1;
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-            margin-top: 24px;
+            display: none;
         }
 
         .story-kpi {
@@ -245,14 +238,11 @@
         }
 
         .brand-row p {
-            margin: 4px 0 0;
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.7;
+            display: none;
         }
 
         .welcome-block {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .welcome-block h2 {
@@ -261,16 +251,11 @@
         }
 
         .welcome-block p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.8;
-            font-size: 14px;
+            display: none;
         }
 
         .form-tips {
-            display: grid;
-            gap: 10px;
-            margin: 18px 0 22px;
+            display: none;
         }
 
         .tip-item {
@@ -414,7 +399,7 @@
                 <section class="story-panel">
                     <div class="story-top">
                         <div class="story-badge">Smart Parking Detection Platform</div>
-                        <h1 class="story-title">让入口先说明白系统能做什么。</h1>
+                        <h1 class="story-title">欢迎使用智慧交通停车位检测系统</h1>
                         <p class="story-copy">
                             这套系统不只是一张上传图片的页面，而是一个覆盖图像检测、视频分析、实时监控和模型数据回看的一体化工作台。
                             登录后，你会先进入总览工作台，再根据任务进入具体模块。

@@ -145,6 +145,21 @@ def detect_objects(model_name, image_data):
             )
             detections = optimized_result['detections']
 
+            if len(detections) <= 1:
+                relaxed_result = run_robust_obb_detection(
+                    model,
+                    temp_path,
+                    image_size=(img_width, img_height),
+                    class_name_mapping=CLASS_NAME_MAPPING,
+                    always_run_rescue=True,
+                    strict=False,
+                )
+                relaxed_detections = relaxed_result['detections']
+                if len(relaxed_detections) > len(detections):
+                    optimized_result = relaxed_result
+                    optimized_result['optimization']['fallback_mode'] = 'relaxed-recall-recheck'
+                    detections = relaxed_detections
+
             detection_image_base64 = None
             if detections:
                 try:

@@ -157,9 +157,9 @@ body::before {
 
 .workspace-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 18px;
-    padding: 22px;
+    padding: 20px 22px;
     overflow: hidden;
     position: relative;
 }
@@ -191,18 +191,20 @@ body::before {
 }
 
 .workspace-hero h2 {
-    margin: 18px 0 12px;
-    font-size: clamp(30px, 4vw, 46px);
-    line-height: 1.05;
-    max-width: 12ch;
+    margin: 14px 0 8px;
+    font-size: clamp(26px, 2.8vw, 36px);
+    line-height: 1.08;
+    max-width: none;
+    white-space: nowrap;
 }
 
 .workspace-hero p {
     margin: 0;
     color: var(--workspace-muted);
-    line-height: 1.8;
-    font-size: 15px;
-    max-width: 62ch;
+    line-height: 1.7;
+    font-size: 14px;
+    max-width: none;
+    white-space: nowrap;
 }
 
 .workspace-hero-actions {
@@ -211,6 +213,44 @@ body::before {
     gap: 10px;
     flex-wrap: wrap;
     margin-top: 20px;
+}
+
+.compact-hint-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.compact-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(133, 93, 44, 0.12);
+    background: rgba(255, 255, 255, 0.74);
+    color: var(--workspace-muted);
+    font-size: 12px;
+    line-height: 1;
+}
+
+.compact-hint strong {
+    color: var(--workspace-text);
+    font-weight: 600;
+}
+
+.compact-tip-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-grid;
+    place-items: center;
+    background: rgba(198, 106, 43, 0.12);
+    color: var(--workspace-accent-strong);
+    font-size: 11px;
+    font-weight: 700;
 }
 
 .workspace-metrics,
@@ -223,11 +263,11 @@ body::before {
 
 .workspace-metrics {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin-top: 20px;
+    margin-top: 18px;
 }
 
 .metric-card {
-    padding: 16px;
+    padding: 14px 16px;
     border-radius: var(--workspace-radius-md);
     background: rgba(255, 255, 255, 0.72);
     border: 1px solid rgba(133, 93, 44, 0.12);
@@ -241,22 +281,17 @@ body::before {
 }
 
 .metric-value {
-    margin-top: 8px;
-    font-size: 24px;
+    margin-top: 6px;
+    font-size: 22px;
     font-weight: 700;
 }
 
 .metric-help {
-    margin-top: 6px;
-    color: var(--workspace-muted);
-    font-size: 13px;
-    line-height: 1.6;
+    display: none;
 }
 
 .guide-card {
-    padding: 18px;
-    position: relative;
-    z-index: 1;
+    display: none;
 }
 
 .guide-card h3,
@@ -332,7 +367,7 @@ body::before {
     align-items: flex-start;
     justify-content: space-between;
     gap: 14px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .card-eyebrow {
@@ -345,23 +380,22 @@ body::before {
 }
 
 .card-title {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
 }
 
 .card-subtitle {
-    margin-top: 6px;
-    color: var(--workspace-muted);
-    font-size: 14px;
+    display: none;
 }
 
 .soft-note {
-    padding: 12px 14px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(133, 93, 44, 0.12);
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.76);
+    border: 1px solid rgba(133, 93, 44, 0.1);
     color: var(--workspace-muted);
-    font-size: 13px;
+    font-size: 12px;
+    white-space: nowrap;
 }
 
 .stack {
@@ -399,7 +433,7 @@ body::before {
 .workspace-dropzone {
     border: 2px dashed rgba(133, 93, 44, 0.22);
     border-radius: 24px;
-    padding: 34px 24px;
+    padding: 28px 24px;
     text-align: center;
     cursor: pointer;
     transition: 180ms ease;
@@ -421,14 +455,18 @@ body::before {
 }
 
 .drop-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .drop-copy {
-    margin-top: 8px;
+    margin-top: 6px;
     color: var(--workspace-muted);
-    font-size: 14px;
+    font-size: 13px;
+}
+
+.detect-page .surface-card:has(.insight-list) {
+    display: none;
 }
 
 .preview-frame {
@@ -629,8 +667,7 @@ body::before {
     }
 
     .workspace-hero h2 {
-        max-width: none;
-        font-size: 30px;
+        font-size: clamp(22px, 4.8vw, 30px);
     }
 
     .split-actions,

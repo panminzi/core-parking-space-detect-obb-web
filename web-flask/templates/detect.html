@@ -14,6 +14,43 @@
             grid-template-rows: auto auto minmax(0, 1fr);
         }
 
+        .detect-page .workspace-hero {
+            align-items: center;
+            min-height: 320px;
+            padding-block: 28px;
+        }
+
+        .detect-page .workspace-hero > div:first-child {
+            max-width: 920px;
+            display: grid;
+            gap: 16px;
+            align-content: center;
+        }
+
+        .detect-page .workspace-hero h2 {
+            margin: 0;
+            max-width: none;
+            font-size: clamp(26px, 2.8vw, 42px);
+            line-height: 1.08;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+
+        .detect-page .workspace-hero p {
+            max-width: none;
+            font-size: 16px;
+            line-height: 1.8;
+            white-space: nowrap;
+        }
+
+        .detect-page .workspace-hero-actions {
+            margin-top: 4px;
+        }
+
+        .detect-page .workspace-metrics {
+            margin-top: 8px;
+        }
+
         .model-mini {
             min-width: min(320px, 100%);
         }
@@ -286,6 +323,19 @@
         }
 
         @media (max-width: 900px) {
+            .detect-page .workspace-hero {
+                min-height: auto;
+                padding-block: 18px;
+            }
+
+            .detect-page .workspace-hero h2 {
+                font-size: clamp(22px, 4.8vw, 30px);
+            }
+
+            .detect-page .workspace-hero p {
+                font-size: 14px;
+            }
+
             .parking-stats,
             .location-grid {
                 grid-template-columns: 1fr;
@@ -355,6 +405,21 @@
                             <el-button class="workspace-secondary" @click="detectObjects" :disabled="!selectedImage || detecting">
                                 {{ detecting ? '检测中...' : '开始检测' }}
                             </el-button>
+                        </div>
+                        <div class="compact-hint-row">
+                            <el-tooltip content="默认模型即可，上传图片后再开始检测。" placement="bottom">
+                                <div class="compact-hint">
+                                    <span class="compact-tip-icon">i</span>
+                                    <strong>快速提示</strong>
+                                    <span>先上传，再检测</span>
+                                </div>
+                            </el-tooltip>
+                            <el-tooltip content="结果重点看检测图、空闲数和占用率。" placement="bottom">
+                                <div class="compact-hint">
+                                    <span class="compact-tip-icon">i</span>
+                                    <span>结果优先看统计</span>
+                                </div>
+                            </el-tooltip>
                         </div>
                         <div class="workspace-metrics">
                             <div class="metric-card">
@@ -899,7 +964,7 @@
                     }
 
                     const url = `./model-data.html?type=training&model=${this.selectedModel}`;
-                    window.open(url, '_blank', 'width=1200,height=800');
+                    window.location.href = url;
                 },
 
                 viewValidationData() {
@@ -909,7 +974,7 @@
                     }
 
                     const url = `./model-data.html?type=validation&model=${this.selectedModel}`;
-                    window.open(url, '_blank', 'width=1200,height=800');
+                    window.location.href = url;
                 },
 
                 previewDetectionImage() {
