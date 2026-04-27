@@ -1,0 +1,21 @@
+{
+  "settings_version": "0.0.6",
+  "datasets_dir": "E:\\project\\code\\core-parking-space-detect-obb-web\\datasets",
+  "weights_dir": "weights",
+  "runs_dir": "runs",
+  "uuid": "9a8d9f0dad1ff46c2b8c5e8f5a99144a341037fd68ae40be3d8c1534769eefab",
+  "sync": true,
+  "api_key": "",
+  "openai_api_key": "",
+  "clearml": true,
+  "comet": true,
+  "dvc": true,
+  "hub": true,
+  "mlflow": true,
+  "neptune": true,
+  "raytune": true,
+  "tensorboard": false,
+  "wandb": false,
+  "vscode_msg": true,
+  "openvino_msg": true
+}

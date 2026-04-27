@@ -46,4 +46,8 @@ Thumbs.db
 desktop.ini
 
 # Large generated model output
+output/
 other/model_train/detect_obb/output/
+
+# Local training datasets
+other/model_train/detect_obb/dataset/

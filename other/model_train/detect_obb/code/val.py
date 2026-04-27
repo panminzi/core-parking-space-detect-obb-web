@@ -1,10 +1,15 @@
+from pathlib import Path
+
 from ultralytics import YOLO
 
-# 加载训练好的模型
-model = YOLO("output/train/weights/best.pt")
 
-# 使用数据集评估模型指标
-metrics = model.val(data="dataset/small_dataset/data.yaml", project="output", name="val", split="test")
+BASE_DIR = Path(__file__).resolve().parent.parent
+MODEL_WEIGHTS = BASE_DIR / "output" / "train" / "weights" / "best.pt"
+DATA_CONFIG = BASE_DIR / "dataset" / "all_dataset" / "data.yaml"
+
+
+model = YOLO(str(MODEL_WEIGHTS))
+metrics = model.val(data=str(DATA_CONFIG), project="output", name="val", split="val")
 print(metrics.box.map)  # map50-95
 print(metrics.box.map50)  # map50
 print(metrics.box.map75)  # map75

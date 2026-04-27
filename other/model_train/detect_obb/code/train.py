@@ -7,7 +7,7 @@ from ultralytics.utils import DEFAULT_CFG
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_CFG.save_dir = str(BASE_DIR / "output" / "train")
 
-DATA_CONFIG = BASE_DIR / "dataset" / "small_dataset" / "data.yaml"
+DATA_CONFIG = BASE_DIR / "dataset" / "all_dataset" / "data.yaml"
 PRETRAINED_WEIGHTS = BASE_DIR / "weights" / "yolo11n-obb.pt"
 MODEL_CONFIG = BASE_DIR / "code" / "models" / "yolo11n-obb-parking-attn.yaml"
 
