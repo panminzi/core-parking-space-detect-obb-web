@@ -497,6 +497,22 @@
                                             <span>{{ processResult.detection_statistics?.avg_detections_per_frame?.toFixed(2) || '0.00' }}</span>
                                         </div>
                                         <div class="info-item">
+                                            <span>Model inference frames</span>
+                                            <span>{{ processResult.detection_statistics?.model_inference_frames || 0 }}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span>Held frames</span>
+                                            <span>{{ processResult.detection_statistics?.interpolated_frames || 0 }}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span>Fixed parking IDs</span>
+                                            <span>{{ processResult.detection_statistics?.fixed_parking_spaces || 0 }}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span>Debounced states</span>
+                                            <span>{{ processResult.detection_statistics?.debounced_detections || 0 }}</span>
+                                        </div>
+                                        <div class="info-item">
                                             <span>处理时间</span>
                                             <span>{{ processResult.processing_time }}秒</span>
                                         </div>
@@ -555,6 +571,7 @@
                                                     <div>
                                                         <div class="frame-number">第{{ frame.frame_number }}帧</div>
                                                         <div class="frame-time">{{ formatFrameTime(frame.frame_number) }}</div>
+                                                        <div class="class-name-en">{{ frame.inference_frame ? 'YOLO inference' : 'held result' }}</div>
                                                     </div>
                                                     <div class="detection-badge" v-if="frame.detections_count > 0">
                                                         {{ frame.detections_count }}个检测

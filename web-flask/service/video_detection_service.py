@@ -6,6 +6,7 @@ import cv2
 import time
 import threading
 import numpy as np
+from copy import deepcopy
 from ultralytics import YOLO
 from config import MODEL_CONFIGS, CLASS_NAME_MAPPING
 from service.detection_optimization import ParkingSpaceMemoryTracker, run_robust_obb_detection
@@ -13,6 +14,134 @@ from service.detection_optimization import ParkingSpaceMemoryTracker, run_robust
 
 _model_cache = {}
 _video_processors = {}
+VIDEO_DETECTION_INTERVAL = 3
+VIDEO_STATE_CHANGE_VOTES = 3
+
+
+class ParkingVideoStateStabilizer:
+    """Give video detections fixed parking-space ids and debounce state changes."""
+
+    def __init__(self, state_change_votes=VIDEO_STATE_CHANGE_VOTES):
+        self.state_change_votes = state_change_votes
+        self._states = {}
+        self._last_detections = []
+
+    def update(self, detections, frame_number):
+        stabilized = []
+        seen_ids = set()
+
+        for detection in detections:
+            parking_id = detection.get('parking_space_id') or detection.get('detection_id')
+            if parking_id is None:
+                parking_id = len(self._states) + 1
+            seen_ids.add(parking_id)
+
+            raw_state = detection.get('class_name_en', detection.get('class_name'))
+            state = self._states.setdefault(parking_id, {
+                'parking_space_id': parking_id,
+                'stable_state': raw_state,
+                'candidate_state': None,
+                'candidate_votes': 0,
+                'first_frame': frame_number,
+                'last_frame': frame_number,
+                'frames_seen': 0,
+                'occupied_frames': 0,
+                'vacant_frames': 0,
+                'total_confidence': 0.0,
+                'max_confidence': 0.0,
+                'transitions': [],
+            })
+
+            if raw_state == state['stable_state']:
+                state['candidate_state'] = None
+                state['candidate_votes'] = 0
+            else:
+                if state['candidate_state'] == raw_state:
+                    state['candidate_votes'] += 1
+                else:
+                    state['candidate_state'] = raw_state
+                    state['candidate_votes'] = 1
+
+                if state['candidate_votes'] >= self.state_change_votes:
+                    old_state = state['stable_state']
+                    state['stable_state'] = raw_state
+                    state['candidate_state'] = None
+                    state['candidate_votes'] = 0
+                    state['transitions'].append({
+                        'frame_number': frame_number,
+                        'from': old_state,
+                        'to': raw_state,
+                    })
+
+            stable_detection = deepcopy(detection)
+            stable_state = state['stable_state']
+            stable_detection['raw_class_name_en'] = raw_state
+            stable_detection['raw_class_name_zh'] = detection.get('class_name_zh')
+            stable_detection['class_name'] = stable_state
+            stable_detection['class_name_en'] = stable_state
+            stable_detection['class_name_zh'] = CLASS_NAME_MAPPING.get(stable_state, stable_state)
+            stable_detection['stable_state'] = stable_state
+            stable_detection['state_debounced'] = raw_state != stable_state
+            stable_detection['state_vote_count'] = state['candidate_votes']
+            stable_detection['parking_space_id'] = parking_id
+            stable_detection['interpolated'] = False
+            stabilized.append(stable_detection)
+
+        self._last_detections = stabilized
+        self._record_frame(stabilized, frame_number)
+        return stabilized
+
+    def reuse_last(self, frame_number):
+        reused = []
+        for detection in self._last_detections:
+            cloned = deepcopy(detection)
+            cloned['interpolated'] = True
+            cloned['tracking_status'] = 'interpolated'
+            reused.append(cloned)
+        self._record_frame(reused, frame_number)
+        return reused
+
+    def _record_frame(self, detections, frame_number):
+        for detection in detections:
+            parking_id = detection.get('parking_space_id')
+            if parking_id not in self._states:
+                continue
+
+            state = self._states[parking_id]
+            stable_state = detection.get('stable_state', detection.get('class_name_en'))
+            state['last_frame'] = frame_number
+            state['frames_seen'] += 1
+            state['total_confidence'] += detection.get('confidence', 0.0)
+            state['max_confidence'] = max(state['max_confidence'], detection.get('confidence', 0.0))
+            if stable_state == 'occupied':
+                state['occupied_frames'] += 1
+            elif stable_state == 'vacant':
+                state['vacant_frames'] += 1
+
+    def summary(self, fps):
+        summaries = []
+        for state in self._states.values():
+            frames_seen = state['frames_seen']
+            occupied_frames = state['occupied_frames']
+            vacant_frames = state['vacant_frames']
+            summaries.append({
+                'parking_space_id': state['parking_space_id'],
+                'current_state': state['stable_state'],
+                'first_frame': state['first_frame'],
+                'last_frame': state['last_frame'],
+                'frames_seen': frames_seen,
+                'occupied_frames': occupied_frames,
+                'vacant_frames': vacant_frames,
+                'occupied_seconds': round(occupied_frames / fps, 2) if fps > 0 else 0,
+                'vacant_seconds': round(vacant_frames / fps, 2) if fps > 0 else 0,
+                'avg_confidence': round(state['total_confidence'] / frames_seen, 3) if frames_seen else 0,
+                'max_confidence': round(state['max_confidence'], 3),
+                'state_changes': len(state['transitions']),
+                'transitions': state['transitions'][:20],
+            })
+
+        summaries.sort(key=lambda item: item['parking_space_id'])
+        return summaries
 
 
 def load_model(model_name):
@@ -61,7 +190,13 @@ def draw_obb_detection_boxes_on_frame(frame, detections):
         bbox = detection['bbox']
         x1, y1 = int(bbox['x1']), int(bbox['y1'])
         label_suffix = " mem" if detection.get('recovered_from_memory') else ""
-        label = f"{class_name}{label_suffix} {confidence:.2f}"
+        if detection.get('interpolated'):
+            label_suffix += " hold"
+        if detection.get('state_debounced'):
+            label_suffix += " stable"
+        parking_id = detection.get('parking_space_id')
+        id_prefix = f"#{parking_id} " if parking_id else ""
+        label = f"{id_prefix}{class_name}{label_suffix} {confidence:.2f}"
 
         font = cv2.FONT_HERSHEY_SIMPLEX
         font_scale = 0.6
@@ -143,6 +278,7 @@ def process_video(model_name, video_path, progress_callback=None):
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        detection_interval = VIDEO_DETECTION_INTERVAL
 
         if progress_callback:
             progress_callback(15, f"视频信息: {width}x{height}, {fps}fps, {total_frames}帧")
@@ -164,10 +300,14 @@ def process_video(model_name, video_path, progress_callback=None):
         total_processing_time = 0
         rescue_frame_count = 0
         recovered_frame_count = 0
+        model_inference_frames = 0
+        interpolated_frames = 0
+        debounced_detection_count = 0
         current_frame = 0
         detection_stats = {}
         frame_detection_details = []
         tracker = ParkingSpaceMemoryTracker(max_missing_frames=8, min_hits=2)
+        state_stabilizer = ParkingVideoStateStabilizer()
 
         if progress_callback:
             progress_callback(20, "开始处理视频帧...")
@@ -182,17 +322,32 @@ def process_video(model_name, video_path, progress_callback=None):
                 frame_progress = 20 + (current_frame / max(total_frames, 1)) * 70
                 progress_callback(frame_progress, f"处理第 {current_frame}/{total_frames} 帧")
 
-            detections, optimization = detect_objects_in_frame(model, frame, tracker)
-            total_processing_time += optimization.get('processing_time', 0)
-            if optimization.get('used_rescue_pass'):
-                rescue_frame_count += 1
-            recovered_count = optimization.get('tracking', {}).get('recovered_count', 0)
-            if recovered_count > 0:
-                recovered_frame_count += 1
+            should_detect = current_frame == 1 or (current_frame - 1) % detection_interval == 0
+            optimization = {
+                'processing_time': 0,
+                'used_rescue_pass': False,
+                'tracking': {},
+                'postprocess': 'interpolated-from-last-detection',
+            }
+            if should_detect:
+                detections, optimization = detect_objects_in_frame(model, frame, tracker)
+                detections = state_stabilizer.update(detections, current_frame)
+                model_inference_frames += 1
+                total_processing_time += optimization.get('processing_time', 0)
+                if optimization.get('used_rescue_pass'):
+                    rescue_frame_count += 1
+                recovered_count = optimization.get('tracking', {}).get('recovered_count', 0)
+                if recovered_count > 0:
+                    recovered_frame_count += 1
+            else:
+                detections = state_stabilizer.reuse_last(current_frame)
+                interpolated_frames += 1
 
             frame_detection_info = {
                 'frame_number': current_frame,
                 'detections_count': len(detections),
+                'inference_frame': should_detect,
+                'interpolated': not should_detect,
                 'detections': [],
             }
 
@@ -222,16 +377,23 @@ def process_video(model_name, video_path, progress_callback=None):
                     stats['max_confidence'] = max(stats['max_confidence'], confidence)
                     stats['min_confidence'] = min(stats['min_confidence'], confidence)
                     stats['frames_appeared'].add(current_frame)
+                    if detection.get('state_debounced'):
+                        debounced_detection_count += 1
 
                     frame_detection_info['detections'].append({
                         'class_name_en': class_name_en,
                         'class_name_zh': class_name_zh,
+                        'raw_class_name_en': detection.get('raw_class_name_en'),
+                        'raw_class_name_zh': detection.get('raw_class_name_zh'),
                         'confidence': confidence,
                         'bbox': detection['bbox'],
                         'obb': detection['obb'],
                         'tracking_status': detection.get('tracking_status', 'live'),
                         'parking_space_id': detection.get('parking_space_id'),
                         'recovered_from_memory': detection.get('recovered_from_memory', False),
+                        'interpolated': detection.get('interpolated', False),
+                        'stable_state': detection.get('stable_state'),
+                        'state_debounced': detection.get('state_debounced', False),
                     })
 
             frame_detection_details.append(frame_detection_info)
@@ -261,6 +423,7 @@ def process_video(model_name, video_path, progress_callback=None):
             })
 
         processed_detection_stats.sort(key=lambda x: x['count'], reverse=True)
+        parking_space_summary = state_stabilizer.summary(fps)
 
         result = {
             'processed_video_path': output_path,
@@ -280,9 +443,17 @@ def process_video(model_name, video_path, progress_callback=None):
                 'avg_detections_per_frame': total_detections / total_frames if total_frames > 0 else 0,
                 'class_statistics': processed_detection_stats,
                 'avg_inference_time_per_frame': total_processing_time / total_frames if total_frames > 0 else 0,
+                'avg_inference_time_per_model_frame': total_processing_time / model_inference_frames if model_inference_frames > 0 else 0,
                 'rescue_frames': rescue_frame_count,
                 'recovered_frames': recovered_frame_count,
+                'model_inference_frames': model_inference_frames,
+                'interpolated_frames': interpolated_frames,
+                'detection_interval': detection_interval,
+                'fixed_parking_spaces': len(parking_space_summary),
+                'debounced_detections': debounced_detection_count,
+                'state_change_votes': VIDEO_STATE_CHANGE_VOTES,
             },
+            'parking_space_summary': parking_space_summary,
             'frame_details': frame_detection_details[:100]
         }
 
