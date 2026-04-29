@@ -18,8 +18,11 @@ def main():
     model = YOLO(str(MODEL_CONFIG), task="obb").load(str(PRETRAINED_WEIGHTS))
     model.train(
         data=str(DATA_CONFIG),
-        epochs=50,
-        imgsz=640,
+        epochs=80,
+        patience=25,
+        imgsz=768,
+        batch=16,
+        workers=8,
     )
 
 
